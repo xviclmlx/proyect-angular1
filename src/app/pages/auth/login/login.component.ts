@@ -24,12 +24,10 @@ export class LoginComponent {
   constructor(private router: Router) {}
 
   login() {
-    if (this.email === this.validEmail && this.password === this.validPassword) {
-      this.errorMsg = '';
-      alert('Bienvenido Macabro444');
-      // this.router.navigate(['/dashboard']); // para después
-    } else {
-      this.errorMsg = 'Correo o contraseña incorrectos';
-    }
+  if (this.email === this.validEmail && this.password === this.validPassword) {
+    this.router.navigate(['/app/dashboard']);
+  } else {
+    this.errorMsg = 'Correo o contraseña incorrectos';
   }
+}
 }
