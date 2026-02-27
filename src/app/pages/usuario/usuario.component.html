@@ -1,0 +1,51 @@
+<div class="page">
+  <h2>Bienvenido a Perfil de Usuario</h2>
+
+  <div class="perfil-container">
+    <p-card>
+
+          <h3>{{ perfil.nombre }}</h3>
+          <span class="username">@{{ perfil.usuario }}</span>
+
+      <p-divider />
+      <div class="perfil-datos">
+
+        <div class="dato">
+          <div>
+            <span class="label">Correo electrónico</span>
+            <span>{{ perfil.email }}</span>
+          </div>
+        </div>
+
+        <div class="dato">
+          <div>
+            <span class="label">Teléfono</span>
+            <span>{{ perfil.telefono }}</span>
+          </div>
+        </div>
+
+        <div class="dato">
+          <div>
+            <span class="label">Dirección</span>
+            <span>{{ perfil.direccion }}</span>
+          </div>
+        </div>
+
+        <div class="dato">
+          <div>
+            <span class="label">Fecha de nacimiento</span>
+            <span>{{ perfil.fechaNacimiento }} — {{ edad }} años</span>
+          </div>
+        </div>
+
+        <div class="dato">
+          <div>
+            <span class="label">Contraseña</span>
+            <span>**********</span>
+          </div>
+        </div>
+
+      </div>
+    </p-card>
+  </div>
+</div>

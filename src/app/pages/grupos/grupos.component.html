@@ -1,0 +1,21 @@
+<div class="page">
+  <h2>Grupos</h2>
+  <p class="subtitulo">Lista de grupos</p>
+
+  <div class="cards-grid">
+    @for (grupo of grupos; track grupo.nombre) {
+      <p-card [header]="grupo.nombre" [subheader]="grupo.materia">
+        <div class="card-content">
+          <div class="stat">
+            <span class="">Total de alumnos</span>
+            <span class="">{{ grupo.alumnos }}</span>
+          </div>
+          <div class="stat">
+            <span class="">Semestre</span>
+            <p-tag [value]="grupo.semestre" severity="info" />
+          </div>
+        </div>
+      </p-card>
+    }
+  </div>
+</div>
