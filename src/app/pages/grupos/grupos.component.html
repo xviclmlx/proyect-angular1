@@ -1,21 +1,65 @@
-<div class="page">
-  <h2>Grupos</h2>
-  <p class="subtitulo">Lista de grupos</p>
+<p-toast />
+<p-confirmDialog />
 
-  <div class="cards-grid">
-    @for (grupo of grupos; track grupo.nombre) {
-      <p-card [header]="grupo.nombre" [subheader]="grupo.materia">
-        <div class="card-content">
-          <div class="stat">
-            <span class="">Total de alumnos</span>
-            <span class="">{{ grupo.alumnos }}</span>
-          </div>
-          <div class="stat">
-            <span class="">Semestre</span>
-            <p-tag [value]="grupo.semestre" severity="info" />
-          </div>
-        </div>
-      </p-card>
-    }
+<div class="page">
+
+  <p-card styleClass="total-card">
+    <div class="total-content">
+      <div>
+        <span class="total-label">TOTAL DE GRUPOS</span>
+        <h2 class="total-num">{{ grupos.length }}</h2>
+      </div>
+      <i class=""></i>
+    </div>
+  </p-card>
+
+  <div style="margin: 1.5rem 0;">
+    <p-button label="Nuevo Grupo" icon="" severity="success" (onClick)="abrirNuevo()" />
   </div>
+
+  <p-table [value]="grupos" [paginator]="true" [rows]="5" styleClass="p-datatable-striped">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Nivel</th>
+        <th>Integrantes</th>
+        <th>Tickets</th>
+        <th>Acciones</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-grupo>
+      <tr>
+        <td>{{ grupo.nombre }}</td>
+        <td>{{ grupo.descripcion }}</td>
+        <td><p-tag [value]="grupo.nivel" severity="info" /></td>
+        <td>{{ grupo.integrantes }}</td>
+        <td>{{ grupo.tickets }}</td>
+        <td>
+          <div style="display:flex; gap:0.5rem;">
+            <p-button icon="pi pi-pencil" severity="info" (onClick)="editar(grupo)" />
+            <p-button icon="pi pi-trash" severity="danger" (onClick)="eliminar(grupo)" />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog 
+    [(visible)]="dialogVisible" 
+    [header]="esEdicion ? 'Editar Grupo' : 'Nuevo Grupo'"
+    [modal]="true" 
+    [style]="{width: '400px'}">
+    <div style="display:flex; flex-direction:column; gap:1rem; padding:0.5rem 0;">
+      <input pInputText [(ngModel)]="grupoActual.nombre" placeholder="Nombre del grupo" style="width:100%" />
+      <input pInputText [(ngModel)]="grupoActual.descripcion" placeholder="Descripción" style="width:100%" />
+      <input pInputText [(ngModel)]="grupoActual.nivel" placeholder="Nivel (Básico, Avanzado...)" style="width:100%" />
+      <input pInputText type="number" [(ngModel)]="grupoActual.integrantes" placeholder="Integrantes" style="width:100%" />
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button label="Cancelar" severity="secondary" (onClick)="dialogVisible = false" />
+      <p-button label="Guardar" icon="pi pi-save" (onClick)="guardar()" />
+    </ng-template>
+  </p-dialog>
+
 </div>
