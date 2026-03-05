@@ -18,36 +18,25 @@ import { Message } from 'primeng/message';
   selector: 'app-usuario',
   standalone: true,
   imports: [
-    CardModule,
-    TagModule,
-    DividerModule,
-    AvatarModule,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-    FormsModule,
-    ToastModule,
-    ConfirmDialogModule,
-    CommonModule,
-    Message,
+    CardModule, TagModule, DividerModule, AvatarModule,
+    ButtonModule, DialogModule, InputTextModule, FormsModule,
+    ToastModule, ConfirmDialogModule, CommonModule, Message
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './usuario.component.html',
-  styleUrl: './usuario.component.css',
+  styleUrl: './usuario.component.css'
 })
 export class UsuarioComponent {
   dialogVisible = false;
 
   perfil = {
-    nombre: 'Jorge Emmanuel Martínez Hernández',
+    nombre: 'Jorge Angel Trejo Cuevas',
     usuario: 'Macabro444',
     email: 'macabrosss444@gmail.com',
     telefono: '4421234567',
     direccion: 'Querétaro, México',
     fechaNacimiento: '2000-05-15',
     rol: 'Administrador',
-    semestre: '8vo Semestre',
-    carrera: 'Ingeniería en Sistemas',
   };
 
   perfilEdicion = { ...this.perfil };
@@ -55,7 +44,7 @@ export class UsuarioComponent {
   constructor(
     private msg: MessageService,
     private confirm: ConfirmationService,
-    private router: Router,
+    private router: Router
   ) {}
 
   get edad(): number {
@@ -67,9 +56,14 @@ export class UsuarioComponent {
     return edad;
   }
 
+  get maxFechaNacimiento(): string {
+    const hoy = new Date();
+    hoy.setFullYear(hoy.getFullYear() - 18);
+    return hoy.toISOString().split('T')[0];
+  }
+
   soloNumeros(event: KeyboardEvent) {
-    const char = event.key;
-    if (!/[0-9]/.test(char)) {
+    if (!/[0-9]/.test(event.key)) {
       event.preventDefault();
     }
   }
@@ -81,11 +75,7 @@ export class UsuarioComponent {
 
   guardar() {
     if (!this.perfilEdicion.nombre || !this.perfilEdicion.email) {
-      this.msg.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Nombre y email son obligatorios',
-      });
+      this.msg.add({ severity: 'error', summary: 'Error', detail: 'Nombre y email son obligatorios' });
       return;
     }
     if (!this.perfilEdicion.email.includes('@')) {
@@ -93,20 +83,21 @@ export class UsuarioComponent {
       return;
     }
     if (this.perfilEdicion.telefono.length !== 10) {
-      this.msg.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'El teléfono debe tener exactamente 10 dígitos',
-      });
+      this.msg.add({ severity: 'error', summary: 'Error', detail: 'El teléfono debe tener exactamente 10 dígitos' });
+      return;
+    }
+    const nac = new Date(this.perfilEdicion.fechaNacimiento);
+    const hoy = new Date();
+    let edadCalc = hoy.getFullYear() - nac.getFullYear();
+    const m = hoy.getMonth() - nac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edadCalc--;
+    if (edadCalc < 18) {
+      this.msg.add({ severity: 'error', summary: 'Error', detail: 'Debes ser mayor de 18 años' });
       return;
     }
     this.perfil = { ...this.perfilEdicion };
     this.dialogVisible = false;
-    this.msg.add({
-      severity: 'success',
-      summary: '¡Actualizado!',
-      detail: 'Perfil actualizado correctamente',
-    });
+    this.msg.add({ severity: 'success', summary: '¡Actualizado!', detail: 'Perfil actualizado correctamente' });
   }
 
   eliminarCuenta() {
@@ -122,7 +113,7 @@ export class UsuarioComponent {
         setTimeout(() => {
           this.router.navigate(['/']);
         }, 2000);
-      },
+      }
     });
   }
 }
