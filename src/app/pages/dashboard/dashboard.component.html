@@ -1,20 +1,173 @@
-<div style="padding: 1.5rem;">
-  <h1>Bienvenido Macabro444</h1>
-  <p style="color:#64748b;">Iniciaste sesión correctamente</p>
-
-  <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.5rem;">
-
-    <ng-container *ifHasPermission="'grupos.editar'">
-      <p-button label="Editar Grupos" icon="" severity="info" />
-    </ng-container>
-
-    <ng-container *ifHasPermission="'usuario.editar'">
-      <p-button label="Editar Usuario" icon="" severity="success" />
-    </ng-container>
-
-    <ng-container *ifHasPermission="'usuario.eliminar'">
-      <p-button label="Eliminar Usuario" icon="" severity="danger" />
-    </ng-container>
-
+<div class="dashboard">
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div>
+        <span class="stat-label">TOTAL TICKETS</span>
+        <h2>{{ stats.total }}</h2>
+      </div>
+      <i class="pi pi-ticket"></i>
+    </div>
+    <div class="stat-card pendiente">
+      <div>
+        <span class="stat-label">PENDIENTES</span>
+        <h2>{{ stats.pendiente }}</h2>
+      </div>
+      <i class="pi pi-clock"></i>
+    </div>
+    <div class="stat-card progreso">
+      <div>
+        <span class="stat-label">EN PROGRESO</span>
+        <h2>{{ stats.enProgreso }}</h2>
+      </div>
+      <i class="pi pi-spin pi-spinner"></i>
+    </div>
+    <div class="stat-card revision">
+      <div>
+        <span class="stat-label">EN REVISIÓN</span>
+        <h2>{{ stats.revision }}</h2>
+      </div>
+      <i class="pi pi-search"></i>
+    </div>
+    <div class="stat-card finalizado">
+      <div>
+        <span class="stat-label">FINALIZADOS</span>
+        <h2>{{ stats.finalizado }}</h2>
+      </div>
+      <i class="pi pi-check-circle"></i>
+    </div>
   </div>
+
+  <div class="controles">
+    <div class="filtros">
+      <p-select
+        [options]="grupos"
+        [ngModel]="grupoSeleccionado()"
+        (ngModelChange)="seleccionarGrupo($event)"
+        placeholder="Filtrar por grupo"
+        style="width: 160px"
+      />
+
+      @if (!vistaKanban()) {
+        <p-select
+          [(ngModel)]="filtroEstado"
+          [options]="estadoOpciones"
+          placeholder="Estado"
+          style="width: 140px"
+        />
+        <p-select
+          [(ngModel)]="filtroPrioridad"
+          [options]="prioridadOpciones"
+          placeholder="Prioridad"
+          style="width: 130px"
+        />
+        <p-select
+          [(ngModel)]="filtroOrden"
+          [options]="ordenOpciones"
+          placeholder="Ordenar"
+          style="width: 150px"
+        />
+      }
+    </div>
+
+    <div class="toggle-vista">
+      <span [class.activo]="!vistaKanban()"> <i class="pi pi-list"></i> Lista </span>
+      <p-toggleswitch [(ngModel)]="vistaKanban" />
+      <span [class.activo]="vistaKanban()"> <i class="pi pi-table"></i> Kanban </span>
+    </div>
+  </div>
+
+  @if (!vistaKanban()) {
+    <p-table
+      [value]="ticketsFiltrados"
+      [paginator]="true"
+      [rows]="5"
+      styleClass="p-datatable-striped p-datatable-gridlines"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Título</th>
+          <th>Estado</th>
+          <th>Prioridad</th>
+          <th>Asignado a</th>
+          <th style="white-space: nowrap">Fecha Límite</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-ticket>
+        <tr>
+          <td>
+            <div style="font-weight: 500">{{ ticket.titulo }}</div>
+            <div style="font-size: 0.8rem; color: #94a3b8">
+              {{ ticket.descripcion | slice: 0 : 50
+              }}{{ ticket.descripcion.length > 50 ? '...' : '' }}
+            </div>
+          </td>
+          <td><p-tag [value]="ticket.estado" [severity]="severidadEstado(ticket.estado)" /></td>
+          <td>
+            <p-tag [value]="ticket.prioridad" [severity]="severidadPrioridad(ticket.prioridad)" />
+          </td>
+          <td>{{ ticket.asignadoA || '—' }}</td>
+          <td style="white-space: nowrap">{{ ticket.fechaLimite }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8">
+            <i
+              class="pi pi-ticket"
+              style="font-size: 2rem; display: block; margin-bottom: 0.5rem"
+            ></i>
+            No hay tickets
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+
+  @if (vistaKanban()) {
+    <div class="kanban-board">
+      @for (col of columnas; track col.estado) {
+        <div class="kanban-col">
+          <div class="kanban-header" [style.border-color]="col.color">
+            <span [style.color]="col.color">{{ col.label }}</span>
+            <span class="kanban-count" [style.background]="col.color">
+              {{ ticketsPorEstado(col.estado).length }}
+            </span>
+          </div>
+          <div class="kanban-cards">
+            @for (ticket of ticketsPorEstado(col.estado); track ticket.id) {
+              <div class="kanban-card">
+                <div class="kanban-card-title">{{ ticket.titulo }}</div>
+                <div class="kanban-card-desc">
+                  {{ ticket.descripcion | slice: 0 : 60
+                  }}{{ ticket.descripcion.length > 60 ? '...' : '' }}
+                </div>
+                <div class="kanban-card-footer">
+                  <p-tag
+                    [value]="ticket.prioridad"
+                    [severity]="severidadPrioridad(ticket.prioridad)"
+                  />
+                  <span style="font-size: 0.75rem; color: #94a3b8">
+                    <i class="pi pi-calendar"></i> {{ ticket.fechaLimite }}
+                  </span>
+                </div>
+                @if (ticket.asignadoA) {
+                  <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.4rem">
+                    <p-avatar
+                      [label]="ticket.asignadoA[0].toUpperCase()"
+                      shape="circle"
+                      size="normal"
+                    />
+                    <span style="font-size: 0.8rem">{{ ticket.asignadoA }}</span>
+                  </div>
+                }
+              </div>
+            }
+            @if (ticketsPorEstado(col.estado).length === 0) {
+              <div class="kanban-empty">Sin tickets</div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
 </div>

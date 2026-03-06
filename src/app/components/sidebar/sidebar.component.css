@@ -1,7 +1,7 @@
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background: #17d488;
+  background: #B3A4C7;
   color: white;
   display: flex;
   flex-direction: column;
@@ -38,12 +38,12 @@
 }
 
 .sidebar-nav a:hover, .sidebar-footer a:hover {
-  background: #17d488;
+  background: #B3A4C7;
   color: #191919;
 }
 
 .sidebar-nav a.active {
-  background: #17d488;
+  background: #B3A4C7;
   color: #030303;
 }
 
