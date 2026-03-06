@@ -1,23 +1,33 @@
 <div class="sidebar">
   <div class="sidebar-header">
-    <h2>La Obsesion Factory</h2>
+    <h2>ERP</h2>
   </div>
 
   <nav class="sidebar-nav">
-    <a routerLink="/app/dashboard" routerLinkActive="active">
-      <i class=""></i> Inicio
-    </a>
-    <a routerLink="/app/grupos" routerLinkActive="active">
-      <i class=""></i> Grupos
-    </a>
-    <a routerLink="/app/usuario" routerLinkActive="active">
-      <i class=""></i> Perfil
-    </a>
+
+    <ng-container *ifHasPermission="'dashboard.view'">
+      <a routerLink="/app/dashboard" routerLinkActive="active">
+        <i class="pi pi-home"></i> Inicio
+      </a>
+    </ng-container>
+
+    <ng-container *ifHasPermission="'grupos.view'">
+      <a routerLink="/app/grupos" routerLinkActive="active">
+        <i class="pi pi-users"></i> Grupos
+      </a>
+    </ng-container>
+
+    <ng-container *ifHasPermission="'usuario.view'">
+      <a routerLink="/app/usuario" routerLinkActive="active">
+        <i class="pi pi-id-card"></i> Perfil
+      </a>
+    </ng-container>
+
   </nav>
 
   <div class="sidebar-footer">
     <a routerLink="/">
-      <i class=""></i> Cerrar sesión
+      <i class="pi pi-sign-out"></i> Cerrar sesión
     </a>
     <span class="version">v1.0.0</span>
   </div>

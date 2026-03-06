@@ -1,4 +1,20 @@
-<div>
+<div style="padding: 1.5rem;">
   <h1>Bienvenido Macabro444</h1>
-  <p>Iniciaste correctamente sesion loco</p>
+  <p style="color:#64748b;">Iniciaste sesión correctamente</p>
+
+  <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.5rem;">
+
+    <ng-container *ifHasPermission="'grupos.editar'">
+      <p-button label="Editar Grupos" icon="" severity="info" />
+    </ng-container>
+
+    <ng-container *ifHasPermission="'usuario.editar'">
+      <p-button label="Editar Usuario" icon="" severity="success" />
+    </ng-container>
+
+    <ng-container *ifHasPermission="'usuario.eliminar'">
+      <p-button label="Eliminar Usuario" icon="" severity="danger" />
+    </ng-container>
+
+  </div>
 </div>
