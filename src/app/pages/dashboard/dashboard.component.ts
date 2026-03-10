@@ -27,7 +27,6 @@ import { GrupoStateService } from '../../services/grupo-state';
     ToggleSwitchModule,
     TableModule,
     TooltipModule,
-    HasPermissionDirective,
     AvatarModule,
   ],
   templateUrl: './dashboard.component.html',

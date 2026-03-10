@@ -3,13 +3,14 @@ import { RouterLink, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
-import { MessageModule } from 'primeng/message';
+import { Message } from 'primeng/message';
 import { CommonModule } from '@angular/common';
+import { PermissionsService } from '../../../services/permissions.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, ButtonModule, InputTextModule, FormsModule, MessageModule, CommonModule],
+  imports: [RouterLink, ButtonModule, InputTextModule, FormsModule, Message, CommonModule],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
@@ -18,16 +19,36 @@ export class LoginComponent {
   showPassword = false;
   errorMsg = '';
 
-  private validEmail = 'macabrosss444@gmail.com';
-  private validPassword = 'Maca@44444';
+  private usuarios = [
+    {
+      email: 'macabrosss444@gmail.com',
+      password: 'Maca@44444',
+      ruta: '/app/dashboard',
+      tipo: 'admin' as const,
+    },
+    {
+      email: 'emmamar@gmail.com',
+      password: 'Emma@12345',
+      ruta: '/app/mi-panel',
+      tipo: 'cliente' as const,
+    },
+  ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private permissions: PermissionsService,
+  ) {}
 
   login() {
-  if (this.email === this.validEmail && this.password === this.validPassword) {
-    this.router.navigate(['/app/dashboard']);
-  } else {
-    this.errorMsg = 'Correo o contraseña incorrectos';
+    const usuario = this.usuarios.find(
+      (u) => u.email === this.email && u.password === this.password,
+    );
+    if (usuario) {
+      this.errorMsg = '';
+      this.permissions.setPermissions(usuario.tipo);
+      this.router.navigate([usuario.ruta]);
+    } else {
+      this.errorMsg = 'Correo o contraseña incorrectos';
+    }
   }
-}
 }

@@ -80,7 +80,7 @@ export class TicketsService {
       titulo: 'Pasar a recoger los Boletos para la rifa',
       descripcion: 'Favor de pasar por su bonche de boletos para venderlos',
       estado: 'pendiente',
-      asignadoA: '',
+      asignadoA: 'EmmaM',
       prioridad: 'baja',
       fechaCreacion: '2026-03-01',
       fechaLimite: '2026-03-10',

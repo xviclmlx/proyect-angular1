@@ -1,28 +1,47 @@
-import { Directive, Input, TemplateRef, ViewContainerRef, OnInit } from '@angular/core';
+import {
+  Directive,
+  Input,
+  TemplateRef,
+  ViewContainerRef,
+  OnInit,
+  OnDestroy,
+  Injector,
+  effect,
+  runInInjectionContext,
+} from '@angular/core';
 import { PermissionsService } from '../services/permissions.service';
 
 @Directive({
   selector: '[ifHasPermission]',
-  standalone: true
+  standalone: true,
 })
-export class HasPermissionDirective implements OnInit {
+export class HasPermissionDirective implements OnInit, OnDestroy {
   @Input() ifHasPermission: string | string[] = [];
 
   constructor(
     private template: TemplateRef<any>,
     private viewContainer: ViewContainerRef,
-    private permissions: PermissionsService
+    private permissions: PermissionsService,
+    private injector: Injector,
   ) {}
 
   ngOnInit() {
-    const permisos = Array.isArray(this.ifHasPermission)
-      ? this.ifHasPermission
-      : [this.ifHasPermission];
+    runInInjectionContext(this.injector, () => {
+      effect(() => {
+        const permisos = Array.isArray(this.ifHasPermission)
+          ? this.ifHasPermission
+          : [this.ifHasPermission];
 
-    if (this.permissions.hasAnyPermission(permisos)) {
-      this.viewContainer.createEmbeddedView(this.template);
-    } else {
-      this.viewContainer.clear();
-    }
+        // Suscribe al signal — se ejecuta cada vez que cambian los permisos
+        const tiene = this.permissions.hasAnyPermission(permisos);
+
+        this.viewContainer.clear();
+        if (tiene) {
+          this.viewContainer.createEmbeddedView(this.template);
+        }
+      });
+    });
   }
+
+  ngOnDestroy() {}
 }
