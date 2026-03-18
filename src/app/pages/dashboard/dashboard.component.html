@@ -5,7 +5,7 @@
   <!-- Header -->
   <div class="dashboard-header">
     <div>
-      <h1>📊 Dashboard</h1>
+      <h1>   Dashboard</h1>
       <p class="header-subtitle">Gestión de Tickets y Proyectos</p>
     </div>
   </div>
@@ -216,19 +216,33 @@
               {{ ticketsPorEstado(col.estado).length }}
             </span>
           </div>
-          <div class="kanban-cards">
+          <div
+            cdkDropList
+            [id]="col.estado"
+            [cdkDropListData]="ticketsPorEstado(col.estado)"
+            [cdkDropListConnectedTo]="['pendiente', 'en-progreso', 'revision', 'finalizado']"
+            cdkDropListSortingDisabled
+            class="kanban-cards"
+            (cdkDropListDropped)="onDrop($event, col.estado)"
+          >
             <ng-container *ngFor="let ticket of ticketsPorEstado(col.estado)">
-              <div class="kanban-card" (click)="verDetalle(ticket)">
+              <div
+                cdkDrag
+                [cdkDragData]="ticket"
+                class="kanban-card"
+              >
+                <div cdkDragHandle class="kanban-card-header-drag">
+                  <p-tag
+                    [value]="ticket.prioridad"
+                    [severity]="severidadPrioridad(ticket.prioridad)"
+                  />
+                </div>
                 <div class="kanban-card-title">{{ ticket.titulo }}</div>
                 <div class="kanban-card-desc">
                   {{ ticket.descripcion | slice: 0 : 70
                   }}{{ ticket.descripcion.length > 70 ? '...' : '' }}
                 </div>
                 <div class="kanban-card-footer">
-                  <p-tag
-                    [value]="ticket.prioridad"
-                    [severity]="severidadPrioridad(ticket.prioridad)"
-                  />
                   <div class="kanban-card-meta">
                     <i class="pi pi-calendar"></i>
                     {{ ticket.fechaLimite }}
@@ -240,7 +254,6 @@
                       <p-avatar
                         [label]="ticket.asignadoA[0].toUpperCase()"
                         shape="circle"
-                        size="normal"
                         [style]="{ background: '#667eea', color: 'white' }"
                       />
                       <span>{{ ticket.asignadoA }}</span>

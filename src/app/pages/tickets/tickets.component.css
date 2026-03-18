@@ -1,10 +1,14 @@
-.page { padding: 1.5rem; }
+.page {
+  padding: 2.5rem;
+  background: transparent;
+}
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .detalle-row {
@@ -15,31 +19,212 @@
 
 .detalle-label {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: rgba(229, 231, 235, 0.78);
   text-transform: uppercase;
-  letter-spacing: 0.05rem;
+  letter-spacing: 1px;
 }
 
 .comentario {
-  background: #f8fafc;
-  border-left: 3px solid #3b82f6;
-  padding: 0.75rem;
-  border-radius: 0 8px 8px 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-left: 3px solid rgba(99, 179, 237, 0.9);
+  padding: 1rem 1.1rem;
+  border-radius: 0 12px 12px 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(14px);
 }
 
-.comentario-autor { font-weight: bold; margin-right: 0.5rem; }
-.comentario-fecha { font-size: 0.75rem; color: #94a3b8; }
-.comentario p { margin: 0.3rem 0 0; }
+.comentario-autor {
+  font-weight: 700;
+  margin-right: 0.6rem;
+  color: rgba(229, 231, 235, 0.92);
+}
+
+.comentario-fecha {
+  font-size: 0.75rem;
+  color: rgba(229, 231, 235, 0.65);
+}
+
+.comentario p {
+  margin: 0.3rem 0 0;
+  color: rgba(229, 231, 235, 0.86);
+}
 
 .historial-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 0.6rem;
 }
 
 .historial-fecha {
   margin-left: auto;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: rgba(229, 231, 235, 0.7);
+}
+
+/* Vista Kanban */
+.vista-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(229, 231, 235, 0.78);
+  padding: 0.6rem 0.9rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.vista-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.vista-toggle.active {
+  background: rgba(99, 179, 237, 0.9);
+  color: rgba(10, 10, 10, 0.9);
+  border-color: rgba(99, 179, 237, 0.95);
+}
+
+.kanban-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 1.2rem;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+  min-height: 500px;
+}
+
+.kanban-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+.kanban-header h3 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.kanban-count {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(229, 231, 235, 0.92);
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.kanban-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+  min-height: 100px;
+}
+
+.kanban-list.cdk-drop-list-dragging .kanban-card:not(.cdk-drag-placeholder) {
+  transition: transform 0.15s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.kanban-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 1.1rem;
+  cursor: move;
+  transition: all 0.2s ease;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+}
+
+.kanban-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.kanban-card h4 {
+  margin: 0.8rem 0 0.5rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.kanban-card p {
+  margin: 0;
+  color: rgba(229, 231, 235, 0.8);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kanban-card-header {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: grab;
+  padding: 0.5rem 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.kanban-card-header:active {
+  cursor: grabbing;
+}
+
+.kanban-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.75rem;
+}
+
+/* Drag states */
+.cdk-drag-preview {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  background: rgba(99, 179, 237, 0.25);
+  border: 2px solid rgba(99, 179, 237, 0.9);
+  border-radius: 14px;
+  padding: 1.1rem;
+  opacity: 0.95;
+}
+
+.cdk-drag-animating {
+  transition: transform 0.25s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .kanban-card:not(.cdk-drag-animating) {
+  transition: transform 0.15s cubic-bezier(0, 0, 0.2, 1);
 }

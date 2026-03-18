@@ -1,7 +1,7 @@
 <p-toast />
 
 <div class="bienvenida" style="margin-bottom: 1.5rem">
-  <p-avatar label="EM" size="xlarge" shape="circle" />
+  <p-avatar [label]="avatarLabel" size="xlarge" shape="circle" />
   <div>
     <h2>Hola de nuevo, {{ cliente.nombre }}</h2>
     <span style="color: #64748b">@{{ cliente.usuario }} · {{ cliente.email }}</span>

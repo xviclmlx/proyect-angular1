@@ -1,8 +1,9 @@
 .panel {
-  padding: 1.5rem;
+  padding: 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
+  background: transparent;
 }
 
 .bienvenida {
@@ -20,22 +21,67 @@
 }
 
 .stat-card {
-  border-radius: 12px;
-  padding: 1.2rem;
+  border-radius: 18px;
+  padding: 1.6rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  color: white;
+  align-items: flex-start;
+  color: rgba(255, 255, 255, 0.92);
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s ease;
+  backdrop-filter: blur(14px);
+  cursor: default;
 }
 
-.stat-card i { font-size: 2rem; opacity: 0.4; }
-.stat-label { font-size: 0.7rem; letter-spacing: 1px; opacity: 0.85; }
-.stat-card h2 { margin: 0.2rem 0 0; font-size: 2rem; }
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 65px rgba(0, 0, 0, 0.45);
+}
 
-.total     { background: #1e293b; }
-.pendiente { background: #f59e0b; }
-.progreso  { background: #3b82f6; }
-.finalizado{ background: #10b981; }
+.stat-card i {
+  font-size: 2.4rem;
+  opacity: 0.35;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  letter-spacing: 1.1px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.stat-card h2 {
+  margin: 0.3rem 0 0;
+  font-size: 2.4rem;
+  font-weight: 800;
+}
+
+.total {
+  background: rgba(99, 179, 237, 0.2);
+  border-color: rgba(99, 179, 237, 0.5);
+}
+
+.pendiente {
+  background: rgba(246, 173, 85, 0.2);
+  border-color: rgba(246, 173, 85, 0.5);
+}
+
+.progreso {
+  background: rgba(99, 179, 237, 0.16);
+  border-color: rgba(99, 179, 237, 0.5);
+}
+
+.finalizado {
+  background: rgba(66, 185, 131, 0.18);
+  border-color: rgba(66, 185, 131, 0.5);
+}
 
 .detalle-row {
   display: flex;
@@ -45,8 +91,9 @@
 
 .detalle-label {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: rgba(229, 231, 235, 0.78);
   text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .historial-item {
@@ -59,5 +106,5 @@
 .historial-fecha {
   margin-left: auto;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: rgba(229, 231, 235, 0.7);
 }

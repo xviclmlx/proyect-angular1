@@ -1,6 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
@@ -23,6 +24,7 @@ import { AvatarModule } from 'primeng/avatar';
   imports: [
     CommonModule,
     FormsModule,
+    DragDropModule,
     ButtonModule,
     TableModule,
     DialogModule,
@@ -46,6 +48,7 @@ export class TicketsComponent {
   dialogDetalle = false;
   ticketSeleccionado: Ticket | null = null;
   nuevoComentario = '';
+  vistaKanban = signal(false);
 
   usuarios = [
     { label: 'Macabro444', value: 'Jorge Trejo' },
@@ -113,6 +116,23 @@ export class TicketsComponent {
       critica: 'danger',
     };
     return map[prioridad] || 'info';
+  }
+
+  getTicketsPorEstado(estado: string) {
+    return this.tickets.filter((t) => t.estado === estado);
+  }
+
+  onDrop(event: any, nuevoEstado: string) {
+    const ticket = event.item.data as Ticket;
+    if (ticket.estado !== nuevoEstado) {
+      ticket.estado = nuevoEstado as 'pendiente' | 'en-progreso' | 'revision' | 'finalizado';
+      this.ticketsService.actualizar(ticket);
+      this.msg.add({
+        severity: 'success',
+        summary: 'Movido',
+        detail: `Ticket movido a ${nuevoEstado}`,
+      });
+    }
   }
 
   abrirCrear() {

@@ -1,32 +1,56 @@
-.page { padding: 1.5rem; }
+.page {
+  padding: 2.5rem;
+  background: transparent;
+}
 
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .total-card {
-  background: #1e293b;
-  color: white;
-  border-radius: 12px;
-  padding: 1.2rem 1.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.92);
+  border-radius: 18px;
+  padding: 1.4rem 1.8rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(18px);
 }
 
-.total-label { font-size: 0.7rem; letter-spacing: 1px; opacity: 0.7; }
-.total-num { font-size: 2.5rem; margin: 0.2rem 0 0; }
-.total-icon { font-size: 3rem; opacity: 0.2; }
+.total-label {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  opacity: 0.75;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.total-num {
+  font-size: 2.5rem;
+  margin: 0.2rem 0 0;
+  font-weight: 800;
+}
+
+.total-icon {
+  font-size: 3rem;
+  opacity: 0.25;
+}
 
 .miembro-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  background: #f8fafc;
+  padding: 0.85rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 0.75rem;
 }

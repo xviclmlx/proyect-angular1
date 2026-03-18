@@ -7,7 +7,7 @@
   <div class="perfil-container">
     <p-card>
       <div class="perfil-header">
-        <p-avatar label="JA" size="xlarge" shape="circle" />
+        <p-avatar [label]="avatarLabel" size="xlarge" shape="circle" />
         <div>
           <h3>{{ perfil.nombre }}</h3>
           <span class="username">@{{ perfil.usuario }}</span>
@@ -93,9 +93,7 @@
       />
 
       <input pInputText [(ngModel)]="perfilEdicion.email" placeholder="Email" style="width: 100%" />
-      @if (perfilEdicion.email && !perfilEdicion.email.includes('@')) {
-        <p-message severity="error" text="El email debe contener @" />
-      }
+      <p-message *ngIf="perfilEdicion.email && !perfilEdicion.email.includes('@')" severity="error" text="El email debe contener @" />
 
       <input
         pInputText
@@ -105,9 +103,7 @@
         (keypress)="soloNumeros($event)"
         style="width: 100%"
       />
-      @if (perfilEdicion.telefono.length > 0 && perfilEdicion.telefono.length < 10) {
-        <p-message severity="warn" text="El teléfono debe tener 10 dígitos" />
-      }
+      <p-message *ngIf="perfilEdicion.telefono?.length > 0 && perfilEdicion.telefono.length < 10" severity="warn" text="El teléfono debe tener 10 dígitos" />
 
       <input
         pInputText
@@ -123,9 +119,7 @@
         [max]="maxFechaNacimiento"
         style="width: 100%"
       />
-      @if (perfilEdicion.fechaNacimiento && perfilEdicion.fechaNacimiento > maxFechaNacimiento) {
-        <p-message severity="error" text="Debes ser mayor de 18 años" />
-      }
+      <p-message *ngIf="perfilEdicion.fechaNacimiento && perfilEdicion.fechaNacimiento > maxFechaNacimiento" severity="error" text="Debes ser mayor de 18 años" />
     </div>
     <ng-template pTemplate="footer">
       <p-button label="Cancelar" severity="secondary" (onClick)="dialogVisible = false" />

@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Message } from 'primeng/message';
 import { HasPermissionDirective } from '../../directives/has-permission.directive';
+import { PermissionsService } from '../../services/permissions.service';
 
 @Component({
   selector: 'app-usuario',
@@ -56,7 +57,16 @@ export class UsuarioComponent {
     private msg: MessageService,
     private confirm: ConfirmationService,
     private router: Router,
-  ) {}
+    private permissions: PermissionsService,
+  ) {
+    const sesion = this.permissions.getSesionActiva()();
+    if (sesion) {
+      this.perfil.nombre = sesion.nombre;
+      this.perfil.email = sesion.email;
+      this.perfil.usuario = sesion.email.split('@')[0];
+      // Other fields remain hardcoded or can be added to session if needed
+    }
+  }
 
   get edad(): number {
     const hoy = new Date();
@@ -73,10 +83,8 @@ export class UsuarioComponent {
     return hoy.toISOString().split('T')[0];
   }
 
-  soloNumeros(event: KeyboardEvent) {
-    if (!/[0-9]/.test(event.key)) {
-      event.preventDefault();
-    }
+  get avatarLabel(): string {
+    return this.perfil.nombre.split(' ').map(n => n[0]).join('').toUpperCase();
   }
 
   abrirEdicion() {

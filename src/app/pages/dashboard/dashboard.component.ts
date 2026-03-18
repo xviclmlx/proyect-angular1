@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
@@ -31,6 +32,7 @@ import { PERMISOS_DISPONIBLES, Usuario } from '../../models/user.model';
   imports: [
     CommonModule,
     FormsModule,
+    DragDropModule,
     ButtonModule,
     CardModule,
     TagModule,
@@ -55,6 +57,10 @@ import { PERMISOS_DISPONIBLES, Usuario } from '../../models/user.model';
 export class DashboardComponent {
   vistaKanban = signal(false);
   grupoSeleccionado = signal<number | null>(null);
+  pendienteList: any;
+  enProgresoList: any;
+  revisionList: any;
+  finalizadoList: any;
 
   busqueda = '';
   filtroEstado = '';
@@ -259,6 +265,19 @@ export class DashboardComponent {
       .tickets()
       .find((t) => t.id === this.ticketSeleccionado!.id)!;
     this.nuevoComentario = '';
+  }
+
+  onDrop(event: any, nuevoEstado: string) {
+    const ticket = event.item.data as Ticket;
+    if (ticket.estado !== nuevoEstado) {
+      ticket.estado = nuevoEstado as 'pendiente' | 'en-progreso' | 'revision' | 'finalizado';
+      this.ticketsService.actualizar(ticket);
+      this.msg.add({
+        severity: 'success',
+        summary: 'Movido',
+        detail: `Ticket movido a ${nuevoEstado}`,
+      });
+    }
   }
 
   togglePermiso(usuario: Usuario, permiso: string, enabled: boolean) {

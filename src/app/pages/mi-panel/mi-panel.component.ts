@@ -55,19 +55,23 @@ export class MiPanelComponent {
     public ticketsService: TicketsService,
     public permissions: PermissionsService,
     private msg: MessageService,
-  ) {}
+  ) {
+    const sesion = this.permissions.getSesionActiva()();
+    if (sesion) {
+      this.cliente.nombre = sesion.nombre;
+      this.cliente.email = sesion.email;
+      // Assuming usuario is derived from email or something, but for now keep hardcoded or add to model
+      // For now, let's assume usuario is the first part of email
+      this.cliente.usuario = sesion.email.split('@')[0];
+    }
+  }
 
   get misTickets(): Ticket[] {
     return this.ticketsService.tickets().filter((t) => t.asignadoA === this.cliente.usuario);
   }
 
-  get stats() {
-    return {
-      total: this.misTickets.length,
-      pendiente: this.misTickets.filter((t) => t.estado === 'pendiente').length,
-      enProgreso: this.misTickets.filter((t) => t.estado === 'en-progreso').length,
-      finalizado: this.misTickets.filter((t) => t.estado === 'finalizado').length,
-    };
+  get avatarLabel(): string {
+    return this.cliente.nombre.split(' ').map(n => n[0]).join('').toUpperCase();
   }
 
   verDetalle(ticket: Ticket) {

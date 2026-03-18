@@ -5,6 +5,6 @@
 
 .content {
   flex: 1;
-  background: #f1f5f9;
-  padding: 2rem;
+  background: linear-gradient(145deg, rgba(12, 16, 37, 0.9), rgba(26, 33, 62, 0.9));
+  padding: 2.5rem;
 }
