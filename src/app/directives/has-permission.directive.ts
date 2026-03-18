@@ -9,7 +9,16 @@ import {
   effect,
   runInInjectionContext,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { PermissionsService } from '../services/permissions.service';
+
+const PERMISO_RUTA: Record<string, string> = {
+  'dashboard.view': '/app/dashboard',
+  'grupos.view': '/app/grupos',
+  'usuario.view': '/app/usuario',
+  'mipanel.view': '/app/mi-panel',
+  'tickets.view': '/app/tickets',
+};
 
 @Directive({
   selector: '[ifHasPermission]',
@@ -23,6 +32,7 @@ export class HasPermissionDirective implements OnInit, OnDestroy {
     private viewContainer: ViewContainerRef,
     private permissions: PermissionsService,
     private injector: Injector,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -32,16 +42,25 @@ export class HasPermissionDirective implements OnInit, OnDestroy {
           ? this.ifHasPermission
           : [this.ifHasPermission];
 
-        // Suscribe al signal — se ejecuta cada vez que cambian los permisos
         const tiene = this.permissions.hasAnyPermission(permisos);
 
         this.viewContainer.clear();
         if (tiene) {
           this.viewContainer.createEmbeddedView(this.template);
+        } else {
+          const rutaActual = this.router.url;
+          const debeRedirigir = permisos.some(
+            (p) => PERMISO_RUTA[p] && rutaActual.startsWith(PERMISO_RUTA[p]),
+          );
+          if (debeRedirigir) {
+            this.router.navigate(['/app/dashboard']);
+          }
         }
       });
     });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    // Angular maneja la limpieza automáticamente
+  }
 }

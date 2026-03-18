@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -8,11 +8,22 @@ import { FormsModule } from '@angular/forms';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
-import { HasPermissionDirective } from '../../directives/has-permission.directive';
-import { TicketsService, Ticket } from '../../services/tickets.service';
+import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DividerModule } from 'primeng/divider';
+import { TextareaModule } from 'primeng/textarea';
+import { InputTextModule } from 'primeng/inputtext';
 import { AvatarModule } from 'primeng/avatar';
+import { MessageModule } from 'primeng/message';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { TicketsService, Ticket } from '../../services/tickets.service';
 import { Router } from '@angular/router';
 import { GrupoStateService } from '../../services/grupo-state';
+import { PermissionsService } from '../../services/permissions.service';
+import { UsuariosService } from '../../services/usuarios.service';
+import { HasPermissionDirective } from '../../directives/has-permission.directive';
+import { PERMISOS_DISPONIBLES, Usuario } from '../../models/user.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,26 +39,64 @@ import { GrupoStateService } from '../../services/grupo-state';
     TableModule,
     TooltipModule,
     AvatarModule,
+    DialogModule,
+    ToastModule,
+    ConfirmDialogModule,
+    DividerModule,
+    TextareaModule,
+    InputTextModule,
+    MessageModule,
+    HasPermissionDirective,
   ],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
   vistaKanban = signal(false);
   grupoSeleccionado = signal<number | null>(null);
 
+  busqueda = '';
   filtroEstado = '';
   filtroPrioridad = '';
   filtroOrden = '';
 
+  dialogDetalle = false;
+  dialogEditar = false;
+  ticketSeleccionado: Ticket | null = null;
+  nuevoComentario = '';
+  ticketEditar: any = null;
+
+  usuarios: Usuario[] = [];
+  permisosList = Object.values(PERMISOS_DISPONIBLES);
+  permisoLabels: Record<string, string> = {
+    [PERMISOS_DISPONIBLES.DASHBOARD]: 'Dashboard',
+    [PERMISOS_DISPONIBLES.GRUPOS_VER]: 'Ver Grupos',
+    [PERMISOS_DISPONIBLES.GRUPOS_CREAR]: 'Crear Grupos',
+    [PERMISOS_DISPONIBLES.GRUPOS_EDITAR]: 'Editar Grupos',
+    [PERMISOS_DISPONIBLES.GRUPOS_ELIMINAR]: 'Eliminar Grupos',
+    [PERMISOS_DISPONIBLES.USUARIOS_VER]: 'Ver Usuarios',
+    [PERMISOS_DISPONIBLES.USUARIOS_CREAR]: 'Crear Usuarios',
+    [PERMISOS_DISPONIBLES.USUARIOS_EDITAR]: 'Editar Usuarios',
+    [PERMISOS_DISPONIBLES.USUARIOS_ELIMINAR]: 'Eliminar Usuarios',
+    [PERMISOS_DISPONIBLES.TICKETS_VER]: 'Ver Tickets',
+    [PERMISOS_DISPONIBLES.TICKETS_CREAR]: 'Crear Tickets',
+    [PERMISOS_DISPONIBLES.TICKETS_EDITAR]: 'Editar Tickets',
+    [PERMISOS_DISPONIBLES.TICKETS_ELIMINAR]: 'Eliminar Tickets',
+    [PERMISOS_DISPONIBLES.MIPANEL_VER]: 'Ver Mi Panel',
+    [PERMISOS_DISPONIBLES.MIPANEL_VER_ASIGNADOS]: 'Ver Asignados',
+    [PERMISOS_DISPONIBLES.MIPANEL_EDITAR_DESCRIPCION]: 'Editar Descripción',
+    [PERMISOS_DISPONIBLES.MIPANEL_FINALIZAR]: 'Finalizar',
+  };
+
   grupos = [
-    { label: 'Todos', value: null },
+    { label: 'Departamentos', value: null },
     { label: 'Departamento TI', value: 1 },
     { label: 'Departamento Consejo Estudiantil', value: 2 },
   ];
 
   estadoOpciones = [
-    { label: 'Todos', value: '' },
+    { label: 'Estado', value: '' },
     { label: 'Pendiente', value: 'pendiente' },
     { label: 'En Progreso', value: 'en-progreso' },
     { label: 'Revisión', value: 'revision' },
@@ -55,7 +104,7 @@ export class DashboardComponent {
   ];
 
   prioridadOpciones = [
-    { label: 'Todas', value: '' },
+    { label: 'Dificultad', value: '' },
     { label: 'Baja', value: 'baja' },
     { label: 'Media', value: 'media' },
     { label: 'Alta', value: 'alta' },
@@ -63,11 +112,17 @@ export class DashboardComponent {
   ];
 
   ordenOpciones = [
-    { label: 'Sin orden', value: '' },
+    { label: 'Tipo de orden', value: '' },
     { label: 'Fecha creación', value: 'fc' },
     { label: 'Fecha límite', value: 'fl' },
     { label: 'Prioridad', value: 'prioridad' },
     { label: 'Estado', value: 'estado' },
+  ];
+
+  usuariosOpciones = [
+    { label: 'Macabro444', value: 'Jorge Trejo' },
+    { label: 'MoiLoz', value: 'Moises Lozano' },
+    { label: 'Sin asignar', value: '' },
   ];
 
   columnas = [
@@ -81,11 +136,16 @@ export class DashboardComponent {
     public ticketsService: TicketsService,
     private router: Router,
     private grupoState: GrupoStateService,
-  ) {}
+    private usuariosService: UsuariosService,
+    private permissions: PermissionsService,
+    private msg: MessageService,
+    private confirm: ConfirmationService,
+  ) {
+    this.usuarios = this.usuariosService.obtenerTodos();
+  }
 
   get ticketsFiltrados(): Ticket[] {
     let lista = this.ticketsService.tickets();
-
     if (this.grupoSeleccionado() !== null) {
       lista = lista.filter((t) => t.grupoId === this.grupoSeleccionado());
     }
@@ -95,6 +155,17 @@ export class DashboardComponent {
     if (this.filtroPrioridad) {
       lista = lista.filter((t) => t.prioridad === this.filtroPrioridad);
     }
+
+    if (this.busqueda) {
+      const term = this.busqueda.toLowerCase();
+      lista = lista.filter(
+        (t) =>
+          t.titulo.toLowerCase().includes(term) ||
+          t.descripcion.toLowerCase().includes(term) ||
+          (t.asignadoA ? t.asignadoA.toLowerCase().includes(term) : false)
+      );
+    }
+
     if (this.filtroOrden === 'fc') {
       lista = [...lista].sort((a, b) => a.fechaCreacion.localeCompare(b.fechaCreacion));
     } else if (this.filtroOrden === 'fl') {
@@ -105,7 +176,6 @@ export class DashboardComponent {
     } else if (this.filtroOrden === 'estado') {
       lista = [...lista].sort((a, b) => a.estado.localeCompare(b.estado));
     }
-
     return lista;
   }
 
@@ -149,6 +219,60 @@ export class DashboardComponent {
     this.grupoState.grupoSeleccionado.set(valor);
     if (valor !== null) {
       this.router.navigate(['/app/grupos']);
+    }
+  }
+
+  verDetalle(ticket: Ticket) {
+    this.ticketSeleccionado = { ...ticket };
+    this.nuevoComentario = '';
+    this.dialogDetalle = true;
+  }
+
+  abrirEditar(ticket: Ticket) {
+    this.ticketEditar = { ...ticket };
+    this.dialogEditar = true;
+  }
+
+  guardarEdicion() {
+    if (!this.ticketEditar.titulo) return;
+    this.ticketsService.actualizar(this.ticketEditar);
+    this.dialogEditar = false;
+    this.msg.add({ severity: 'success', summary: 'Actualizado', detail: 'Ticket actualizado' });
+  }
+
+  eliminar(ticket: Ticket) {
+    this.confirm.confirm({
+      message: `¿Eliminar el ticket "${ticket.titulo}"?`,
+      header: 'Confirmar',
+      icon: 'pi pi-trash',
+      accept: () => {
+        this.ticketsService.eliminar(ticket.id);
+        this.msg.add({ severity: 'warn', summary: 'Eliminado', detail: 'Ticket eliminado' });
+      },
+    });
+  }
+
+  agregarComentario() {
+    if (!this.nuevoComentario.trim() || !this.ticketSeleccionado) return;
+    this.ticketsService.agregarComentario(this.ticketSeleccionado.id, this.nuevoComentario);
+    this.ticketSeleccionado = this.ticketsService
+      .tickets()
+      .find((t) => t.id === this.ticketSeleccionado!.id)!;
+    this.nuevoComentario = '';
+  }
+
+  togglePermiso(usuario: Usuario, permiso: string, enabled: boolean) {
+    const nuevosPermisos = enabled
+      ? Array.from(new Set([...usuario.permisos, permiso]))
+      : usuario.permisos.filter((p) => p !== permiso);
+
+    this.usuariosService.actualizar(usuario.id, { permisos: nuevosPermisos });
+    this.usuarios = this.usuariosService.obtenerTodos();
+
+    const sesionActual = this.permissions.getSesionActiva()();
+    if (sesionActual?.id === usuario.id) {
+      const nuevaSesion = { ...sesionActual, permisos: nuevosPermisos };
+      this.permissions.setSesion(nuevaSesion);
     }
   }
 }

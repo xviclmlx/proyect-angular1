@@ -1,45 +1,29 @@
 import { Injectable, signal } from '@angular/core';
+import { SesionActiva } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class PermissionsService {
-  private permisosAdmin = [
-    'dashboard.view',
-    'grupos.view',
-    'grupos.editar',
-    'grupos.eliminar',
-    'usuario.view',
-    'usuario.editar',
-    'tickets.view',
-    'tickets.crear',
-    'ticket.editar',
-    'ticket.eliminar',
-  ];
-
-  private permisosCliente = [
-    'mipanel.view',
-    'ticket.ver-asignados',
-    //'ticket.editar-descripcion'//,
-    'ticket.finalizar',
-    //'ticket.editar-estado'//,
-  ];
-
+  private sesionActiva = signal<SesionActiva | null>(this.cargarSesion());
   private userPermissions = signal<string[]>(this.cargarPermisos());
 
-  private cargarPermisos(): string[] {
+  private cargarSesion(): SesionActiva | null {
     try {
-      // sessionStorage es único por pestaña ← aquí el cambio
-      const usuario = sessionStorage.getItem('usuario_activo');
-      if (!usuario || (usuario !== 'admin' && usuario !== 'cliente')) {
-        sessionStorage.clear();
-        return [];
-      }
-      if (usuario === 'admin') return this.permisosAdmin;
-      if (usuario === 'cliente') return this.permisosCliente;
-      return [];
+      const sesion = sessionStorage.getItem('sesion_activa');
+      if (!sesion) return null;
+      return JSON.parse(sesion) as SesionActiva;
     } catch {
-      sessionStorage.clear();
-      return [];
+      sessionStorage.removeItem('sesion_activa');
+      return null;
     }
+  }
+
+  private cargarPermisos(): string[] {
+    const sesion = this.sesionActiva();
+    return sesion ? sesion.permisos : [];
+  }
+
+  getSesionActiva() {
+    return this.sesionActiva;
   }
 
   hasPermission(permiso: string): boolean {
@@ -50,14 +34,36 @@ export class PermissionsService {
     return permisos.some((p) => this.hasPermission(p));
   }
 
-  setPermissions(tipo: 'admin' | 'cliente') {
-    sessionStorage.setItem('usuario_activo', tipo); // ← aquí el cambio
-    const permisos = tipo === 'admin' ? this.permisosAdmin : this.permisosCliente;
-    this.userPermissions.set(permisos);
+  hasAllPermissions(permisos: string[]): boolean {
+    return permisos.every((p) => this.hasPermission(p));
   }
 
-  clearPermissions() {
+  setSesion(sesion: SesionActiva) {
+    sessionStorage.setItem('sesion_activa', JSON.stringify(sesion));
+    this.sesionActiva.set(sesion);
+    this.userPermissions.set(sesion.permisos);
+  }
+
+  clearSession() {
+    this.sesionActiva.set(null);
     this.userPermissions.set([]);
-    sessionStorage.removeItem('usuario_activo'); // ← aquí el cambio
+    sessionStorage.removeItem('sesion_activa');
+  }
+
+  addPermission(permiso: string) {
+    this.userPermissions.update((permisos) => {
+      if (!permisos.includes(permiso)) {
+        return [...permisos, permiso];
+      }
+      return permisos;
+    });
+  }
+
+  removePermission(permiso: string) {
+    this.userPermissions.update((permisos) => permisos.filter((p) => p !== permiso));
+  }
+
+  isAuthenticated(): boolean {
+    return this.sesionActiva() !== null;
   }
 }

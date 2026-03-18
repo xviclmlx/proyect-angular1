@@ -6,49 +6,49 @@ import { FormsModule } from '@angular/forms';
 import { Message } from 'primeng/message';
 import { CommonModule } from '@angular/common';
 import { PermissionsService } from '../../../services/permissions.service';
+import { UsuariosService } from '../../../services/usuarios.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [RouterLink, ButtonModule, InputTextModule, FormsModule, Message, CommonModule],
   templateUrl: './login.component.html',
+  styleUrl: './login.component.css',
 })
 export class LoginComponent {
   email = '';
   password = '';
   showPassword = false;
   errorMsg = '';
-
-  private usuarios = [
-    {
-      email: 'macabrosss444@gmail.com',
-      password: 'Maca@44444',
-      ruta: '/app/dashboard',
-      tipo: 'admin' as const,
-    },
-    {
-      email: 'emmamar@gmail.com',
-      password: 'Emma@12345',
-      ruta: '/app/mi-panel',
-      tipo: 'cliente' as const,
-    },
-  ];
+  cargando = false;
 
   constructor(
     private router: Router,
     private permissions: PermissionsService,
+    private usuarios: UsuariosService,
   ) {}
 
   login() {
-    const usuario = this.usuarios.find(
-      (u) => u.email === this.email && u.password === this.password,
-    );
-    if (usuario) {
-      this.errorMsg = '';
-      this.permissions.setPermissions(usuario.tipo);
-      this.router.navigate([usuario.ruta]);
-    } else {
-      this.errorMsg = 'Correo o contraseña incorrectos';
+    if (!this.email || !this.password) {
+      this.errorMsg = 'Por favor completa todos los campos';
+      return;
     }
+
+    this.cargando = true;
+    this.errorMsg = '';
+
+    // Simular llamada a backend
+    setTimeout(() => {
+      const sesion = this.usuarios.autenticar(this.email, this.password);
+      
+      if (sesion) {
+        this.permissions.setSesion(sesion);
+        this.router.navigate(['/app/dashboard']);
+      } else {
+        this.errorMsg = 'Correo o contraseña incorrectos';
+      }
+      
+      this.cargando = false;
+    }, 300);
   }
 }

@@ -1,42 +1,70 @@
-<div class="sidebar">
+<div class="sidebar" [class.collapsed]="!sidebarAbierto()">
+  <!-- Header con Toggle -->
   <div class="sidebar-header">
-    <h2>ERP</h2>
+    <div class="header-content">
+      <div class="logo-container">
+        <div class="logo">
+          <i class="pi pi-briefcase"></i>
+        </div>
+        @if (sidebarAbierto()) {
+          <span class="logo-text">ERP</span>
+        }
+      </div>
+      <button class="btn-toggle" (click)="toggleSidebar()" title="Contraer/Expandir">
+        <i [class]="sidebarAbierto() ? 'pi pi-chevron-left' : 'pi pi-chevron-right'"></i>
+      </button>
+    </div>
   </div>
 
+  <!-- Información del Usuario -->
+  <div class="user-info" *ngIf="sidebarAbierto()">
+    <div class="user-avatar">{{ avatarUsuario() }}</div>
+    <div class="user-details">
+      <p class="user-name">{{ nombreUsuario() }}</p>
+      <p class="user-role">Conectado</p>
+    </div>
+  </div>
+
+  <!-- Navegación Principal -->
   <nav class="sidebar-nav">
-    <ng-container *ifHasPermission="'dashboard.view'">
-      <a routerLink="/app/dashboard" routerLinkActive="active">
-        <i class="pi pi-home"></i> Inicio
-      </a>
-    </ng-container>
+    <div class="nav-section">
+      <p class="section-title" *ngIf="sidebarAbierto()">Menú Principal</p>
 
-    <ng-container *ifHasPermission="'tickets.view'">
-      <a routerLink="/app/tickets" routerLinkActive="active">
-        <i class="pi pi-ticket"></i> Tickets
-      </a>
-    </ng-container>
-
-    <ng-container *ifHasPermission="'grupos.view'">
-      <a routerLink="/app/grupos" routerLinkActive="active"> <i class="pi pi-users"></i> Grupos </a>
-    </ng-container>
-
-    <ng-container *ifHasPermission="'usuario.view'">
-      <a routerLink="/app/usuario" routerLinkActive="active">
-        <i class="pi pi-id-card"></i> Perfil
-      </a>
-    </ng-container>
-
-    <ng-container *ifHasPermission="'mipanel.view'">
-      <a routerLink="/app/mi-panel" routerLinkActive="active">
-        <i class="pi pi-home"></i> Mi Panel
-      </a>
-    </ng-container>
+      @for (item of menuItems; track item.ruta) {
+        @if (tienePermiso(item.permisoRequerido)) {
+          <a
+            [routerLink]="item.ruta"
+            routerLinkActive="active"
+            class="nav-item"
+            [title]="item.label"
+          >
+            <i [class]="'pi ' + item.icon"></i>
+            @if (sidebarAbierto()) {
+              <span class="nav-label">{{ item.label }}</span>
+            }
+          </a>
+        }
+      }
+    </div>
   </nav>
 
+  <!-- Footer con Cerrar Sesión -->
   <div class="sidebar-footer">
-    <a (click)="cerrarSesion()" style="cursor: pointer">
-      <i class="pi pi-sign-out"></i> Cerrar sesión
-    </a>
-    <span class="version">v1.0.0</span>
+    <button
+      #logoutBtn
+      (click)="cerrarSesion($event)"
+      class="btn-logout"
+      [title]="sidebarAbierto() ? '' : 'Cerrar sesión'"
+    >
+      <i class="pi pi-sign-out"></i>
+      @if (sidebarAbierto()) {
+        <span>Cerrar sesión</span>
+      }
+    </button>
+    @if (sidebarAbierto()) {
+      <span class="version">v1.0.0</span>
+    }
   </div>
 </div>
+
+<p-confirmDialog></p-confirmDialog>
