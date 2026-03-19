@@ -39,17 +39,27 @@ import { SelectModule } from 'primeng/select';
   styleUrl: './mi-panel.component.css',
 })
 export class MiPanelComponent {
+
   cliente = {
-    nombre: 'Emmanuel Martínez',
-    usuario: 'EmmaM',
-    email: 'emmamar@gmail.com',
+    nombre: 'Vicente fernandes',
+    usuario: 'vicente',
+    email: 'vicente@gmail.com',
     departamento: 'Departamento TI'
   };
 
   dialogDetalle = false;
   dialogEditar = false;
+  dialogEstado = false;
+
   ticketSeleccionado: Ticket | null = null;
   nuevaDescripcion = '';
+  nuevoEstado = '';
+
+  estadoOpciones = [
+    { label: 'Pendiente', value: 'pendiente' },
+    { label: 'En Progreso', value: 'en-progreso' },
+    { label: 'Revisión', value: 'revision' },
+  ];
 
   constructor(
     public ticketsService: TicketsService,
@@ -60,19 +70,41 @@ export class MiPanelComponent {
     if (sesion) {
       this.cliente.nombre = sesion.nombre;
       this.cliente.email = sesion.email;
-      // Assuming usuario is derived from email or something, but for now keep hardcoded or add to model
-      // For now, let's assume usuario is the first part of email
       this.cliente.usuario = sesion.email.split('@')[0];
     }
   }
 
+  // ✅ TICKETS DEL USUARIO
   get misTickets(): Ticket[] {
-    return this.ticketsService.tickets().filter((t) => t.asignadoA === this.cliente.usuario);
+    return this.ticketsService.tickets().filter(
+      (t) => t.asignadoA === this.cliente.usuario
+    );
   }
 
-  get avatarLabel(): string {
-    return this.cliente.nombre.split(' ').map(n => n[0]).join('').toUpperCase();
+  // ✅ 🔥 SOLUCIÓN DEL ERROR (stats)
+  get stats() {
+    const tickets = this.misTickets;
+
+    return {
+      total: tickets.length,
+      pendiente: tickets.filter(t => t.estado === 'pendiente').length,
+      enProgreso: tickets.filter(t => t.estado === 'en-progreso').length,
+      finalizado: tickets.filter(t => t.estado === 'finalizado').length,
+    };
   }
+
+  // ✅ AVATAR
+  get avatarLabel(): string {
+    return this.cliente.nombre
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
+  }
+
+  // ===============================
+  // FUNCIONES
+  // ===============================
 
   verDetalle(ticket: Ticket) {
     this.ticketSeleccionado = { ...ticket };
@@ -94,6 +126,7 @@ export class MiPanelComponent {
       });
       return;
     }
+
     const actualizado: Ticket = {
       ...this.ticketSeleccionado!,
       descripcion: this.nuevaDescripcion,
@@ -109,43 +142,16 @@ export class MiPanelComponent {
         },
       ],
     };
+
     this.ticketsService.actualizar(actualizado);
     this.dialogEditar = false;
+
     this.msg.add({
       severity: 'success',
       summary: '¡Actualizado!',
       detail: 'Descripción guardada correctamente',
     });
   }
-
-  severidadEstado(estado: string) {
-    const map: any = {
-      pendiente: 'warn',
-      'en-progreso': 'info',
-      revision: 'secondary',
-      finalizado: 'success',
-    };
-    return map[estado] || 'info';
-  }
-
-  severidadPrioridad(prioridad: string) {
-    const map: any = {
-      baja: 'secondary',
-      media: 'info',
-      alta: 'warn',
-      critica: 'danger',
-    };
-    return map[prioridad] || 'info';
-  }
-
-  estadoOpciones = [
-    { label: 'Pendiente', value: 'pendiente' },
-    { label: 'En Progreso', value: 'en-progreso' },
-    { label: 'Revisión', value: 'revision' },
-  ];
-
-  dialogEstado = false;
-  nuevoEstado = '';
 
   abrirCambiarEstado(ticket: Ticket) {
     this.ticketSeleccionado = { ...ticket };
@@ -169,8 +175,10 @@ export class MiPanelComponent {
         },
       ],
     };
+
     this.ticketsService.actualizar(actualizado);
     this.dialogEstado = false;
+
     this.msg.add({
       severity: 'success',
       summary: 'Estado actualizado',
@@ -194,11 +202,37 @@ export class MiPanelComponent {
         },
       ],
     };
+
     this.ticketsService.actualizar(actualizado);
+
     this.msg.add({
       severity: 'success',
       summary: '¡Finalizado!',
       detail: 'Ticket marcado como finalizado',
     });
+  }
+
+  // ===============================
+  // UTILIDADES
+  // ===============================
+
+  severidadEstado(estado: string) {
+    const map: any = {
+      pendiente: 'warn',
+      'en-progreso': 'info',
+      revision: 'secondary',
+      finalizado: 'success',
+    };
+    return map[estado] || 'info';
+  }
+
+  severidadPrioridad(prioridad: string) {
+    const map: any = {
+      baja: 'secondary',
+      media: 'info',
+      alta: 'warn',
+      critica: 'danger',
+    };
+    return map[prioridad] || 'info';
   }
 }

@@ -126,8 +126,8 @@ export class DashboardComponent {
   ];
 
   usuariosOpciones = [
-    { label: 'Macabro444', value: 'Jorge Trejo' },
-    { label: 'MoiLoz', value: 'Moises Lozano' },
+    { label: 'user12', value: 'victor gudiño' },
+    { label: 'dieguiñi', value: 'Diego rivera' },
     { label: 'Sin asignar', value: '' },
   ];
 

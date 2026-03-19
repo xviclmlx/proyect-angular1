@@ -18,6 +18,7 @@
       </div>
 
       <p-divider />
+
       <div class="perfil-datos">
         <div class="dato">
           <i class="pi pi-envelope"></i>
@@ -26,6 +27,7 @@
             <span>{{ perfil.email }}</span>
           </div>
         </div>
+
         <div class="dato">
           <i class="pi pi-phone"></i>
           <div>
@@ -33,6 +35,7 @@
             <span>{{ perfil.telefono }}</span>
           </div>
         </div>
+
         <div class="dato">
           <i class="pi pi-map-marker"></i>
           <div>
@@ -40,6 +43,7 @@
             <span>{{ perfil.direccion }}</span>
           </div>
         </div>
+
         <div class="dato">
           <i class="pi pi-calendar"></i>
           <div>
@@ -47,6 +51,7 @@
             <span>{{ perfil.fechaNacimiento }} — {{ edad }} años</span>
           </div>
         </div>
+
         <div class="dato">
           <i class="pi pi-lock"></i>
           <div>
@@ -57,6 +62,7 @@
       </div>
 
       <p-divider />
+
       <div style="display: flex; gap: 1rem; flex-wrap: wrap">
         <ng-container *ifHasPermission="'usuario.editar'">
           <p-button
@@ -66,6 +72,7 @@
             (onClick)="abrirEdicion()"
           />
         </ng-container>
+
         <ng-container *ifHasPermission="'usuario.eliminar'">
           <p-button
             label="Eliminar cuenta"
@@ -78,6 +85,7 @@
     </p-card>
   </div>
 
+  <!-- 🔥 MODAL -->
   <p-dialog
     [(visible)]="dialogVisible"
     header="Editar Perfil"
@@ -85,6 +93,8 @@
     [style]="{ width: '420px' }"
   >
     <div style="display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem 0">
+
+      <!-- NOMBRE -->
       <input
         pInputText
         [(ngModel)]="perfilEdicion.nombre"
@@ -92,9 +102,20 @@
         style="width: 100%"
       />
 
-      <input pInputText [(ngModel)]="perfilEdicion.email" placeholder="Email" style="width: 100%" />
-      <p-message *ngIf="perfilEdicion.email && !perfilEdicion.email.includes('@')" severity="error" text="El email debe contener @" />
+      <!-- EMAIL -->
+      <input
+        pInputText
+        [(ngModel)]="perfilEdicion.email"
+        placeholder="Email"
+        style="width: 100%"
+      />
+      <p-message
+        *ngIf="perfilEdicion.email && !perfilEdicion.email.includes('@')"
+        severity="error"
+        text="El email debe contener @"
+      />
 
+      <!-- TELEFONO -->
       <input
         pInputText
         [(ngModel)]="perfilEdicion.telefono"
@@ -103,8 +124,15 @@
         (keypress)="soloNumeros($event)"
         style="width: 100%"
       />
-      <p-message *ngIf="perfilEdicion.telefono?.length > 0 && perfilEdicion.telefono.length < 10" severity="warn" text="El teléfono debe tener 10 dígitos" />
 
+      <!-- 🔥 CORREGIDO (SIN ?.length) -->
+      <p-message
+        *ngIf="perfilEdicion.telefono && perfilEdicion.telefono.length < 10"
+        severity="warn"
+        text="El teléfono debe tener 10 dígitos"
+      />
+
+      <!-- DIRECCION -->
       <input
         pInputText
         [(ngModel)]="perfilEdicion.direccion"
@@ -112,6 +140,7 @@
         style="width: 100%"
       />
 
+      <!-- FECHA -->
       <input
         pInputText
         type="date"
@@ -119,11 +148,26 @@
         [max]="maxFechaNacimiento"
         style="width: 100%"
       />
-      <p-message *ngIf="perfilEdicion.fechaNacimiento && perfilEdicion.fechaNacimiento > maxFechaNacimiento" severity="error" text="Debes ser mayor de 18 años" />
+
+      <p-message
+        *ngIf="perfilEdicion.fechaNacimiento && perfilEdicion.fechaNacimiento > maxFechaNacimiento"
+        severity="error"
+        text="Debes ser mayor de 18 años"
+      />
+
     </div>
+
     <ng-template pTemplate="footer">
-      <p-button label="Cancelar" severity="secondary" (onClick)="dialogVisible = false" />
-      <p-button label="Guardar" icon="pi pi-save" (onClick)="guardar()" />
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        (onClick)="dialogVisible = false"
+      />
+      <p-button
+        label="Guardar"
+        icon="pi pi-save"
+        (onClick)="guardar()"
+      />
     </ng-template>
   </p-dialog>
 </div>

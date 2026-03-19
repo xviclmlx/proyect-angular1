@@ -14,6 +14,139 @@ import { MessageService } from 'primeng/api';
   imports: [RouterLink, ButtonModule, InputTextModule, FormsModule, ReactiveFormsModule, MessageModule, CommonModule, ToastModule],
   providers: [MessageService],
   templateUrl: './register.component.html',
+  styles: [
+    `
+    .register-root {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.5rem;
+      background: radial-gradient(circle at top, rgba(99, 179, 237, 0.25), rgba(15, 23, 42, 0.92));
+      color: #f9fafb;
+    }
+
+    .register-card {
+      width: 420px;
+      padding: 2.2rem 2.3rem;
+      border-radius: 22px;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .register-title {
+      text-align: center;
+      font-size: 1.9rem;
+      letter-spacing: 0.03em;
+      margin: 0;
+      background: linear-gradient(90deg, rgba(99, 179, 237, 1), rgba(236, 72, 153, 1));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .fields {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .field {
+      opacity: 0;
+      transform: translateZ(220px) rotateX(15deg);
+      animation: flyFromScreen 0.9s ease-out forwards;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 0.95rem 1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(245, 245, 245, 0.95);
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .field-input:focus {
+      border-color: rgba(99, 179, 237, 0.9);
+      box-shadow: 0 0 0 4px rgba(99, 179, 237, 0.22);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .field-password {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.55);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .password-toggle:hover {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.9rem;
+      flex-direction: column;
+      margin-top: 0.5rem;
+    }
+
+    .login-link {
+      text-align: center;
+      color: rgba(229, 231, 235, 0.75);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .login-link a {
+      color: rgba(99, 179, 237, 0.95);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes flyFromScreen {
+      0% {
+        opacity: 0;
+        transform: translateZ(220px) rotateX(15deg);
+      }
+      60% {
+        opacity: 1;
+        transform: translateZ(-40px) rotateX(5deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translateZ(0) rotateX(0);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .register-card {
+        width: 100%;
+        padding: 1.6rem 1.4rem;
+      }
+    }
+    `,
+  ],
 })
 export class RegisterComponent {
   showPassword = false;

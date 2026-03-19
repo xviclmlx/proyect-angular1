@@ -16,6 +16,17 @@ import { Message } from 'primeng/message';
 import { HasPermissionDirective } from '../../directives/has-permission.directive';
 import { PermissionsService } from '../../services/permissions.service';
 
+// 🔥 INTERFAZ (CLAVE PARA EL ERROR)
+interface Perfil {
+  nombre: string;
+  usuario: string;
+  email: string;
+  telefono: string;
+  direccion: string;
+  fechaNacimiento: string;
+  rol: string;
+}
+
 @Component({
   selector: 'app-usuario',
   standalone: true,
@@ -39,9 +50,11 @@ import { PermissionsService } from '../../services/permissions.service';
   styleUrl: './usuario.component.css',
 })
 export class UsuarioComponent {
+
   dialogVisible = false;
 
-  perfil = {
+  // ✅ YA TIPADO (NUNCA será undefined)
+  perfil: Perfil = {
     nombre: 'Victor Antonio Gudiño Velazco',
     usuario: 'Viclml',
     email: 'viclml@gmail.com',
@@ -51,7 +64,7 @@ export class UsuarioComponent {
     rol: 'Administrador',
   };
 
-  perfilEdicion = { ...this.perfil };
+  perfilEdicion: Perfil = { ...this.perfil };
 
   constructor(
     private msg: MessageService,
@@ -64,9 +77,12 @@ export class UsuarioComponent {
       this.perfil.nombre = sesion.nombre;
       this.perfil.email = sesion.email;
       this.perfil.usuario = sesion.email.split('@')[0];
-      // Other fields remain hardcoded or can be added to session if needed
     }
   }
+
+  // ===============================
+  // GETTERS
+  // ===============================
 
   get edad(): number {
     const hoy = new Date();
@@ -84,8 +100,37 @@ export class UsuarioComponent {
   }
 
   get avatarLabel(): string {
-    return this.perfil.nombre.split(' ').map(n => n[0]).join('').toUpperCase();
+    return this.perfil.nombre
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
   }
+
+  // ===============================
+  // INPUT SOLO NÚMEROS
+  // ===============================
+
+  soloNumeros(event: KeyboardEvent) {
+    const tecla = event.key;
+
+    if (
+      tecla === 'Backspace' ||
+      tecla === 'Delete' ||
+      tecla === 'ArrowLeft' ||
+      tecla === 'ArrowRight'
+    ) {
+      return;
+    }
+
+    if (!/^[0-9]$/.test(tecla)) {
+      event.preventDefault();
+    }
+  }
+
+  // ===============================
+  // ACCIONES
+  // ===============================
 
   abrirEdicion() {
     this.perfilEdicion = { ...this.perfil };
@@ -101,11 +146,18 @@ export class UsuarioComponent {
       });
       return;
     }
+
     if (!this.perfilEdicion.email.includes('@')) {
-      this.msg.add({ severity: 'error', summary: 'Error', detail: 'El email debe contener @' });
+      this.msg.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'El email debe contener @'
+      });
       return;
     }
-    if (this.perfilEdicion.telefono.length !== 10) {
+
+    // 🔥 VALIDACIÓN SEGURA
+    if (!this.perfilEdicion.telefono || this.perfilEdicion.telefono.length !== 10) {
       this.msg.add({
         severity: 'error',
         summary: 'Error',
@@ -113,17 +165,26 @@ export class UsuarioComponent {
       });
       return;
     }
+
     const nac = new Date(this.perfilEdicion.fechaNacimiento);
     const hoy = new Date();
     let edadCalc = hoy.getFullYear() - nac.getFullYear();
     const m = hoy.getMonth() - nac.getMonth();
+
     if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edadCalc--;
+
     if (edadCalc < 18) {
-      this.msg.add({ severity: 'error', summary: 'Error', detail: 'Debes ser mayor de 18 años' });
+      this.msg.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Debes ser mayor de 18 años'
+      });
       return;
     }
+
     this.perfil = { ...this.perfilEdicion };
     this.dialogVisible = false;
+
     this.msg.add({
       severity: 'success',
       summary: '¡Actualizado!',
@@ -140,7 +201,12 @@ export class UsuarioComponent {
       rejectLabel: 'Cancelar',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.msg.add({ severity: 'warn', summary: 'Cuenta eliminada', detail: 'Redirigiendo...' });
+        this.msg.add({
+          severity: 'warn',
+          summary: 'Cuenta eliminada',
+          detail: 'Redirigiendo...'
+        });
+
         setTimeout(() => {
           this.router.navigate(['/']);
         }, 2000);

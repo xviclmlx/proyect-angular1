@@ -32,7 +32,7 @@ export class UsuariosService {
       id: 2,
       email: 'user@gmail.com',
       password: '12345',
-      nombre: 'Emma Martínez',
+      nombre: 'vicente fernandes',
       avatar: '👩‍💼',
       permisos: [
         PERMISOS_DISPONIBLES.DASHBOARD,

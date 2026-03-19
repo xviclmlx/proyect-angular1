@@ -67,8 +67,8 @@ export class GruposComponent implements OnInit {
       nivel: 'Avanzado',
       tickets: 2,
       miembros: [
-        { id: 1, nombre: 'Jorge Trejo', usuario: 'macabro444', email: 'macabrosss444@gmail.com' },
-        { id: 2, nombre: 'Moises Lozano', usuario: 'Moiloz', email: 'moiloz@gmail.com' },
+        { id: 1, nombre: 'diego rivera', usuario: 'dieguiñi', email: 'dieguiñi@gmail.com' },
+        { id: 2, nombre: 'victor gudiño', usuario: 'victor gudiño', email: 'victor.gudiño@gmail.com' },
       ],
     },
     {
@@ -78,15 +78,15 @@ export class GruposComponent implements OnInit {
       nivel: 'Básico',
       tickets: 1,
       miembros: [
-        { id: 1, nombre: 'Valeria Gonzalez', usuario: 'GonzVal', email: 'Valegonzzz@gmail.com' },
+        { id: 1, nombre: 'roberto gomes', usuario: 'GonzVal', email: 'rober@gmail.com' },
       ],
     },
   ];
 
   usuariosDisponibles: Miembro[] = [
-    { id: 3, nombre: 'Tito Billalobos', usuario: 'Tibb', email: 'titodoublep@gmail.com' },
-    { id: 4, nombre: 'Emmanuel Martinez', usuario: 'EmmaM', email: 'emmamar@gmail.com' },
-    { id: 5, nombre: 'Jose Delgadillo', usuario: 'ElDelga', email: 'delgaaa@gmail.com' },
+    { id: 3, nombre: 'delgadilli', usuario: 'Tibb', email: 'germxm@gmail.com' },
+    { id: 4, nombre: 'miguel', usuario: 'angel', email: 'miguelanguel@gmail.com' },
+    { id: 5, nombre: 'Rogelio', usuario: 'ElRoY', email: 'rogelio@gmail.com' },
   ];
 
   dialogGrupo = false;
@@ -116,8 +116,8 @@ export class GruposComponent implements OnInit {
   ];
 
   usuariosOpciones = [
-    { label: 'Macabro444', value: 'Jorge Trejo' },
-    { label: 'MoiLoz', value: 'Moises Lozano' },
+    { label: 'dieguiñi', value: 'diego rivera' },
+    { label: 'victor gudiño', value: 'victor gudiño' },
     { label: 'Sin asignar', value: '' },
   ];
 

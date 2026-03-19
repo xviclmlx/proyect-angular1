@@ -51,8 +51,8 @@ export class TicketsComponent {
   vistaKanban = signal(false);
 
   usuarios = [
-    { label: 'Macabro444', value: 'Jorge Trejo' },
-    { label: 'MoiLoz', value: 'Moises Lozano' },
+    { label: 'user12', value: 'Victor Gudiño' },
+    { label: 'dieguiñi', value: 'Diego Rivera' },
     { label: 'Sin asignar', value: '' },
   ];
 
