@@ -6,6 +6,7 @@ export interface Usuario {
   avatar?: string;
   permisos: string[];
   activo: boolean;
+  rol?: string;
 }
 
 export interface SesionActiva {

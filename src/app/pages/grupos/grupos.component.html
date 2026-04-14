@@ -4,8 +4,8 @@
 <div class="page">
   <div class="page-header">
     <ng-container *ifHasPermission="'grupos.crear'">
-  <p-button label="Nuevo Grupo" icon="pi pi-plus" severity="success" (onClick)="abrirNuevo()" />
-</ng-container>
+      <p-button label="Nuevo Grupo" icon="pi pi-plus" severity="success" (onClick)="abrirNuevo()" />
+    </ng-container>
   </div>
 
   <div class="total-card">
@@ -35,9 +35,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-grupo>
       <tr>
-        <td>
-          <strong>{{ grupo.nombre }}</strong>
-        </td>
+        <td><strong>{{ grupo.nombre }}</strong></td>
         <td>{{ grupo.descripcion }}</td>
         <td><p-tag [value]="grupo.nivel" severity="info" /></td>
         <td>
@@ -57,24 +55,23 @@
             </span>
           </div>
         </td>
-        <td>{{ grupo.tickets }}</td>
+        <td>{{ getTicketsDelGrupo(grupo.id) }}</td>
         <td>
           <div style="display: flex; gap: 0.5rem">
             <ng-container *ifHasPermission="'tickets.crear'">
-  <p-button
-    icon="pi pi-ticket"
-    severity="success"
-    pTooltip="Nuevo Ticket"
-    (onClick)="abrirCrearTicket(grupo)"
-  />
-</ng-container>
+              <p-button
+                icon="pi pi-ticket"
+                severity="success"
+                pTooltip="Nuevo Ticket"
+                (onClick)="abrirCrearTicket(grupo)"
+              />
+            </ng-container>
             <p-button
               icon="pi pi-users"
               severity="info"
               pTooltip="Ver miembros"
               (onClick)="verMiembros(grupo)"
             />
-
             <ng-container *ifHasPermission="'grupos.editar'">
               <p-button
                 icon="pi pi-pencil"
@@ -83,7 +80,6 @@
                 (onClick)="editar(grupo)"
               />
             </ng-container>
-
             <ng-container *ifHasPermission="'grupos.eliminar'">
               <p-button
                 icon="pi pi-trash"
@@ -145,7 +141,7 @@
           <p-avatar [label]="m.nombre[0].toUpperCase()" shape="circle" />
           <div style="flex: 1">
             <div style="font-weight: 500">{{ m.nombre }}</div>
-            <div style="font-size: 0.8rem; color: #94a3b8">@{{ m.usuario }} · {{ m.email }}</div>
+            <div style="font-size: 0.8rem; color: #94a3b8">{{ m.email }}</div>
           </div>
           <p-button
             icon="pi pi-user-minus"
@@ -166,7 +162,7 @@
       <input
         pInputText
         [(ngModel)]="busquedaMiembro"
-        placeholder="Buscar por nombre, usuario o email..."
+        placeholder="Buscar por nombre o email..."
         style="width: 100%"
       />
 
@@ -175,7 +171,7 @@
           <p-avatar [label]="u.nombre[0].toUpperCase()" shape="circle" />
           <div style="flex: 1">
             <div style="font-weight: 500">{{ u.nombre }}</div>
-            <div style="font-size: 0.8rem; color: #94a3b8">@{{ u.usuario }} · {{ u.email }}</div>
+            <div style="font-size: 0.8rem; color: #94a3b8">{{ u.email }}</div>
           </div>
           @if (esMiembro(u)) {
             <p-tag value="Ya es miembro" severity="success" />
@@ -225,16 +221,20 @@
       style="width: 100%"
     />
     <p-select
-      [(ngModel)]="nuevoTicket.asignadoA"
-      [options]="usuariosOpciones"
-      placeholder="Asignar a..."
-      style="width: 100%"
-    />
-    <label style="color: #64748b; font-size: 0.85rem">Fecha límite</label>
+  [(ngModel)]="nuevoTicket.asignado_a"
+  [options]="usuariosOpciones"
+  optionLabel="label"
+  optionValue="value"
+  optionLabel="label"
+  optionValue="value"
+  placeholder="Asignar a..."
+  style="width: 100%"
+/>
+    <label style="font-size: 0.85rem; color: #64748b">Fecha límite</label>
     <input
       pInputText
       type="date"
-      [(ngModel)]="nuevoTicket.fechaLimite"
+      [(ngModel)]="nuevoTicket.fecha_limite"
       [min]="minFecha"
       style="width: 100%"
     />

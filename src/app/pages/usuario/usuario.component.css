@@ -41,11 +41,21 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  color: rgba(229, 231, 235, 0.9);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #1e293b !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(100, 116, 139, 0.35) !important;
   border-radius: 14px;
   padding: 1rem 1.1rem;
+}
+
+.dato .label {
+  color: #334155 !important;
+  font-weight: 700;
+}
+
+.dato span {
+  color: #0f172a !important;
+  font-weight: 700;
 }
 
 .dato i {
@@ -64,6 +74,179 @@
   margin-bottom: 0.15rem;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+.usuarios-admin {
+  margin-top: 2rem;
+  max-width: 100%;
+}
+
+.usuarios-admin h2 {
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.users-table {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.user-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.avatar-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(99, 179, 237, 0.2);
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+}
+
+.user-info h4 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.93);
+}
+
+.user-info small {
+  color: rgba(229, 231, 235, 0.82);
+}
+
+.user-info p {
+  margin: 0.25rem 0 0 0;
+  color: rgba(229, 231, 235, 0.78);
+  font-size: 0.9rem;
+}
+
+.user-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.usuario-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.usuario-info-section h3,
+.usuario-permisos-section h3 {
+  margin: 0 0 1rem 0;
+  color: #0f172a !important;
+  font-weight: 800;
+}
+
+.usuario-info-section .info-item label,
+.usuario-info-section .info-item span,
+.usuario-permisos-section .perm-checkbox,
+.usuario-permisos-section .perm-checkbox span {
+  color: #0f172a !important;
+  font-weight: 600;
+}
+
+.usuario-permisos-section .perm-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0f172a !important;
+  background: rgba(255,255,255,0.9);
+  border-radius: 6px;
+  padding: 0.35rem 0.45rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: rgba(229, 231, 235, 0.82);
+  font-size: 0.9rem;
+}
+
+.info-item span {
+  color: rgba(255, 255, 255, 0.93);
+}
+
+.permisos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.perm-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: rgba(236, 239, 241, 0.86);
+}
+
+.empty-state {
+  color: #94a3b8;
+  padding: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+  background: rgba(148, 163, 184, 0.06);
+  margin-bottom: 1rem;
+}
+
+/* Estilos para el modal */
+::ng-deep .p-dialog .p-dialog-content {
+  color: #1e293b !important;
+}
+
+::ng-deep .usuario-modal-content h3 {
+  color: #1e293b !important;
+  margin-bottom: 1rem;
+}
+
+::ng-deep .info-item label {
+  color: #475569 !important;
+  font-weight: 600;
+}
+
+::ng-deep .info-item span {
+  color: #1e293b !important;
+}
+
+::ng-deep .perm-checkbox {
+  color: #374151 !important;
+}
+
+::ng-deep .perm-checkbox input[type="checkbox"] {
+  accent-color: #3b82f6;
+}
+
+::ng-deep .p-dialog .p-dialog-header {
+  color: #1e293b !important;
+}
+
+::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
+  color: #1e293b !important;
 }
 
 ::ng-deep .avatar {

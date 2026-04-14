@@ -5,8 +5,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { Message } from 'primeng/message';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { PermissionsService } from '../../../services/permissions.service';
-import { UsuariosService } from '../../../services/usuarios.service';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +25,7 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private permissions: PermissionsService,
-    private usuarios: UsuariosService,
+    private http: HttpClient,
   ) {}
 
   login() {
@@ -37,18 +37,20 @@ export class LoginComponent {
     this.cargando = true;
     this.errorMsg = '';
 
-    // Simular llamada a backend
-    setTimeout(() => {
-      const sesion = this.usuarios.autenticar(this.email, this.password);
-      
-      if (sesion) {
-        this.permissions.setSesion(sesion);
+    this.http.post<any>('http://localhost:3000/api/auth/login', {
+      email: this.email,
+      password: this.password
+    }).subscribe({
+      next: (res) => {
+        localStorage.setItem('token', res.token);
+        this.permissions.setSesion(res.usuario);
         this.router.navigate(['/app/dashboard']);
-      } else {
+        this.cargando = false;
+      },
+      error: () => {
         this.errorMsg = 'Correo o contraseña incorrectos';
+        this.cargando = false;
       }
-      
-      this.cargando = false;
-    }, 300);
+    });
   }
 }

@@ -15,35 +15,26 @@ import { MessageService } from 'primeng/api';
 import { TicketsService, Ticket } from '../../services/tickets.service';
 import { PermissionsService } from '../../services/permissions.service';
 import { SelectModule } from 'primeng/select';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-mi-panel',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    ButtonModule,
-    CardModule,
-    TagModule,
-    TableModule,
-    DialogModule,
-    InputTextModule,
-    TextareaModule,
-    DividerModule,
-    AvatarModule,
-    ToastModule,
-    SelectModule,
+    CommonModule, FormsModule, ButtonModule, CardModule, TagModule,
+    TableModule, DialogModule, InputTextModule, TextareaModule,
+    DividerModule, AvatarModule, ToastModule, SelectModule, TooltipModule,
   ],
   providers: [MessageService],
   templateUrl: './mi-panel.component.html',
   styleUrl: './mi-panel.component.css',
 })
 export class MiPanelComponent {
-
   cliente = {
-    nombre: 'Vicente fernandes',
-    usuario: 'vicente',
-    email: 'vicente@gmail.com',
+    id: 0,
+    nombre: '',
+    usuario: '',
+    email: '',
     departamento: 'Departamento TI'
   };
 
@@ -68,23 +59,24 @@ export class MiPanelComponent {
   ) {
     const sesion = this.permissions.getSesionActiva()();
     if (sesion) {
+      this.cliente.id = sesion.id;
       this.cliente.nombre = sesion.nombre;
       this.cliente.email = sesion.email;
       this.cliente.usuario = sesion.email.split('@')[0];
     }
+    this.ticketsService.cargar();
   }
 
-  // ✅ TICKETS DEL USUARIO
-  get misTickets(): Ticket[] {
-    return this.ticketsService.tickets().filter(
-      (t) => t.asignadoA === this.cliente.usuario
-    );
-  }
+ get misTickets(): Ticket[] {
+  console.log('Mi id:', this.cliente.id);
+  console.log('Todos los tickets:', this.ticketsService.tickets());
+  return this.ticketsService.tickets().filter(
+    (t) => t.asignado_a === this.cliente.id
+  );
+}
 
-  // ✅ 🔥 SOLUCIÓN DEL ERROR (stats)
   get stats() {
     const tickets = this.misTickets;
-
     return {
       total: tickets.length,
       pendiente: tickets.filter(t => t.estado === 'pendiente').length,
@@ -93,18 +85,9 @@ export class MiPanelComponent {
     };
   }
 
-  // ✅ AVATAR
   get avatarLabel(): string {
-    return this.cliente.nombre
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
+    return this.cliente.nombre.split(' ').map(n => n[0]).join('').toUpperCase();
   }
-
-  // ===============================
-  // FUNCIONES
-  // ===============================
 
   verDetalle(ticket: Ticket) {
     this.ticketSeleccionado = { ...ticket };
@@ -119,37 +102,20 @@ export class MiPanelComponent {
 
   guardarDescripcion() {
     if (!this.nuevaDescripcion.trim()) {
-      this.msg.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'La descripción no puede estar vacía',
-      });
+      this.msg.add({ severity: 'error', summary: 'Error', detail: 'La descripción no puede estar vacía' });
       return;
     }
-
     const actualizado: Ticket = {
       ...this.ticketSeleccionado!,
       descripcion: this.nuevaDescripcion,
-      historial: [
-        ...this.ticketSeleccionado!.historial,
-        {
-          id: this.ticketSeleccionado!.historial.length + 1,
-          campo: 'descripcion',
-          valorAnterior: this.ticketSeleccionado!.descripcion,
-          valorNuevo: this.nuevaDescripcion,
-          fecha: new Date().toISOString().split('T')[0],
-          usuario: this.cliente.usuario,
-        },
-      ],
     };
-
-    this.ticketsService.actualizar(actualizado);
-    this.dialogEditar = false;
-
-    this.msg.add({
-      severity: 'success',
-      summary: '¡Actualizado!',
-      detail: 'Descripción guardada correctamente',
+    this.ticketsService.actualizar(actualizado).subscribe({
+      next: () => {
+        this.ticketsService.cargar();
+        this.dialogEditar = false;
+        this.msg.add({ severity: 'success', summary: '¡Actualizado!', detail: 'Descripción guardada correctamente' });
+      },
+      error: () => this.msg.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar' })
     });
   }
 
@@ -163,76 +129,35 @@ export class MiPanelComponent {
     const actualizado: Ticket = {
       ...this.ticketSeleccionado!,
       estado: this.nuevoEstado as any,
-      historial: [
-        ...this.ticketSeleccionado!.historial,
-        {
-          id: this.ticketSeleccionado!.historial.length + 1,
-          campo: 'estado',
-          valorAnterior: this.ticketSeleccionado!.estado,
-          valorNuevo: this.nuevoEstado,
-          fecha: new Date().toISOString().split('T')[0],
-          usuario: this.cliente.usuario,
-        },
-      ],
     };
-
-    this.ticketsService.actualizar(actualizado);
-    this.dialogEstado = false;
-
-    this.msg.add({
-      severity: 'success',
-      summary: 'Estado actualizado',
-      detail: `Ticket movido a ${this.nuevoEstado}`,
+    this.ticketsService.actualizar(actualizado).subscribe({
+      next: () => {
+        this.ticketsService.cargar();
+        this.dialogEstado = false;
+        this.msg.add({ severity: 'success', summary: 'Estado actualizado', detail: `Ticket movido a ${this.nuevoEstado}` });
+      },
+      error: () => this.msg.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar el estado' })
     });
   }
 
   finalizarTicket(ticket: Ticket) {
-    const actualizado: Ticket = {
-      ...ticket,
-      estado: 'finalizado',
-      historial: [
-        ...ticket.historial,
-        {
-          id: ticket.historial.length + 1,
-          campo: 'estado',
-          valorAnterior: ticket.estado,
-          valorNuevo: 'finalizado',
-          fecha: new Date().toISOString().split('T')[0],
-          usuario: this.cliente.usuario,
-        },
-      ],
-    };
-
-    this.ticketsService.actualizar(actualizado);
-
-    this.msg.add({
-      severity: 'success',
-      summary: '¡Finalizado!',
-      detail: 'Ticket marcado como finalizado',
+    const actualizado: Ticket = { ...ticket, estado: 'finalizado' };
+    this.ticketsService.actualizar(actualizado).subscribe({
+      next: () => {
+        this.ticketsService.cargar();
+        this.msg.add({ severity: 'success', summary: '¡Finalizado!', detail: 'Ticket marcado como finalizado' });
+      },
+      error: () => this.msg.add({ severity: 'error', summary: 'Error', detail: 'No se pudo finalizar el ticket' })
     });
   }
 
-  // ===============================
-  // UTILIDADES
-  // ===============================
-
   severidadEstado(estado: string) {
-    const map: any = {
-      pendiente: 'warn',
-      'en-progreso': 'info',
-      revision: 'secondary',
-      finalizado: 'success',
-    };
+    const map: any = { pendiente: 'warn', 'en-progreso': 'info', revision: 'secondary', finalizado: 'success' };
     return map[estado] || 'info';
   }
 
   severidadPrioridad(prioridad: string) {
-    const map: any = {
-      baja: 'secondary',
-      media: 'info',
-      alta: 'warn',
-      critica: 'danger',
-    };
+    const map: any = { baja: 'secondary', media: 'info', alta: 'warn', critica: 'danger' };
     return map[prioridad] || 'info';
   }
 }

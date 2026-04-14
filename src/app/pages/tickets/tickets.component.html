@@ -5,42 +5,18 @@
   <div class="page-header">
     <h2><i class="pi pi-ticket"></i> Tickets</h2>
     <div style="display: flex; gap: 0.75rem">
-      <button
-        class="vista-toggle"
-        [class.active]="!vistaKanban()"
-        (click)="vistaKanban.set(false)"
-        pTooltip="Vista Tabla"
-        tooltipPosition="top"
-      >
+      <button class="vista-toggle" [class.active]="!vistaKanban()" (click)="vistaKanban.set(false)" pTooltip="Vista Tabla" tooltipPosition="top">
         <i class="pi pi-bars"></i>
       </button>
-      <button
-        class="vista-toggle"
-        [class.active]="vistaKanban()"
-        (click)="vistaKanban.set(true)"
-        pTooltip="Vista Kanban"
-        tooltipPosition="top"
-      >
+      <button class="vista-toggle" [class.active]="vistaKanban()" (click)="vistaKanban.set(true)" pTooltip="Vista Kanban" tooltipPosition="top">
         <i class="pi pi-th"></i>
       </button>
-      <p-button
-        label="Nuevo Ticket"
-        icon="pi pi-plus"
-        severity="success"
-        (onClick)="abrirCrear()"
-      />
+      <p-button label="Nuevo Ticket" icon="pi pi-plus" severity="success" (onClick)="abrirCrear()" />
     </div>
   </div>
 
   @if (!vistaKanban()) {
-    <p-table
-      [value]="tickets"
-      [paginator]="true"
-      [rows]="5"
-      styleClass="p-datatable-striped p-datatable-gridlines"
-      [tableStyle]="{ 'min-width': '60rem' }"
-      [scrollable]="true"
-    >
+    <p-table [value]="tickets" [paginator]="true" [rows]="5" styleClass="p-datatable-striped p-datatable-gridlines" [tableStyle]="{ 'min-width': '60rem' }" [scrollable]="true">
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 35%">Título</th>
@@ -51,64 +27,40 @@
           <th style="width: 17%">Acciones</th>
         </tr>
       </ng-template>
-
       <ng-template pTemplate="body" let-ticket>
         <tr>
           <td>
             <div style="font-weight: 500">{{ ticket.titulo }}</div>
             <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 2px">
-              {{ ticket.descripcion | slice: 0 : 50
-              }}{{ ticket.descripcion.length > 50 ? '...' : '' }}
+              {{ ticket.descripcion | slice: 0 : 50 }}{{ ticket.descripcion.length > 50 ? '...' : '' }}
             </div>
           </td>
           <td><p-tag [value]="ticket.estado" [severity]="severidadEstado(ticket.estado)" /></td>
-          <td>
-            <p-tag [value]="ticket.prioridad" [severity]="severidadPrioridad(ticket.prioridad)" />
-          </td>
+          <td><p-tag [value]="ticket.prioridad" [severity]="severidadPrioridad(ticket.prioridad)" /></td>
           <td>
             <div style="display: flex; align-items: center; gap: 0.5rem">
-              <p-avatar
-                [label]="ticket.asignadoA ? ticket.asignadoA[0].toUpperCase() : '?'"
-                shape="circle"
-                size="normal"
-              />
-              <span>{{ ticket.asignadoA || '—' }}</span>
+              <p-avatar [label]="ticket.asignado_nombre ? ticket.asignado_nombre[0].toUpperCase() : '?'" shape="circle" size="normal" />
+              <span>{{ ticket.asignado_nombre || '—' }}</span>
             </div>
           </td>
           <td>
             <div style="display: flex; align-items: center; gap: 0.4rem">
               <i class="pi pi-calendar" style="color: #94a3b8; font-size: 0.85rem"></i>
-              {{ ticket.fechaLimite }}
+              {{ ticket.fecha_limite }}
             </div>
           </td>
           <td>
             <div style="display: flex; gap: 0.5rem">
-              <p-button
-                icon="pi pi-eye"
-                severity="info"
-                pTooltip="Ver detalle"
-                tooltipPosition="top"
-                (onClick)="verDetalle(ticket)"
-              />
-              <p-button
-                icon="pi pi-trash"
-                severity="danger"
-                pTooltip="Eliminar"
-                tooltipPosition="top"
-                (onClick)="eliminar(ticket)"
-              />
+              <p-button icon="pi pi-eye" severity="info" pTooltip="Ver detalle" tooltipPosition="top" (onClick)="verDetalle(ticket)" />
+              <p-button icon="pi pi-trash" severity="danger" pTooltip="Eliminar" tooltipPosition="top" (onClick)="eliminar(ticket)" />
             </div>
           </td>
         </tr>
       </ng-template>
-
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="6" style="text-align: center; padding: 2rem; color: #94a3b8">
-            <i
-              class="pi pi-ticket"
-              style="font-size: 2rem; display: block; margin-bottom: 0.5rem"
-            ></i>
+            <i class="pi pi-ticket" style="font-size: 2rem; display: block; margin-bottom: 0.5rem"></i>
             No hay tickets registrados
           </td>
         </tr>
@@ -121,22 +73,9 @@
           <h3>Pendiente</h3>
           <span class="kanban-count">{{ getTicketsPorEstado('pendiente').length }}</span>
         </div>
-        <div
-          cdkDropList
-          #pendienteList="cdkDropList"
-          [cdkDropListData]="getTicketsPorEstado('pendiente')"
-          [cdkDropListConnectedTo]="[enProgresoList, revisionList, finalizadoList]"
-          cdkDropListSortingDisabled
-          class="kanban-list"
-          (cdkDropListDropped)="onDrop($event, 'pendiente')"
-        >
+        <div cdkDropList #pendienteList="cdkDropList" [cdkDropListData]="getTicketsPorEstado('pendiente')" [cdkDropListConnectedTo]="[enProgresoList, revisionList, finalizadoList]" cdkDropListSortingDisabled class="kanban-list" (cdkDropListDropped)="onDrop($event, 'pendiente')">
           @for (ticket of getTicketsPorEstado('pendiente'); track ticket.id) {
-            <div
-              cdkDrag
-              [cdkDragData]="ticket"
-              class="kanban-card"
-              [class]="'severity-' + severidadPrioridad(ticket.prioridad)"
-            >
+            <div cdkDrag [cdkDragData]="ticket" class="kanban-card" [class]="'severity-' + severidadPrioridad(ticket.prioridad)">
               <div cdkDragHandle class="kanban-card-header">
                 <p-tag [value]="ticket.prioridad" [severity]="severidadPrioridad(ticket.prioridad)" />
               </div>
@@ -144,15 +83,10 @@
               <p>{{ ticket.descripcion | slice: 0 : 60 }}...</p>
               <div class="kanban-card-footer">
                 <div style="display: flex; align-items: center; gap: 0.3rem">
-                  <p-avatar
-                    [label]="ticket.asignadoA ? ticket.asignadoA[0].toUpperCase() : '?'"
-                    shape="circle"
-                  />
-                  <span style="font-size: 0.8rem">{{ ticket.asignadoA || 'Sin asignar' }}</span>
+                  <p-avatar [label]="ticket.asignado_nombre ? ticket.asignado_nombre[0].toUpperCase() : '?'" shape="circle" />
+                  <span style="font-size: 0.8rem">{{ ticket.asignado_nombre || 'Sin asignar' }}</span>
                 </div>
-                <span style="font-size: 0.75rem; color: rgba(229, 231, 235, 0.6)"
-                  >{{ ticket.fechaLimite }}</span
-                >
+                <span style="font-size: 0.75rem; color: rgba(229, 231, 235, 0.6)">{{ ticket.fecha_limite }}</span>
               </div>
             </div>
           }
@@ -164,22 +98,9 @@
           <h3>En Progreso</h3>
           <span class="kanban-count">{{ getTicketsPorEstado('en-progreso').length }}</span>
         </div>
-        <div
-          cdkDropList
-          #enProgresoList="cdkDropList"
-          [cdkDropListData]="getTicketsPorEstado('en-progreso')"
-          [cdkDropListConnectedTo]="[pendienteList, revisionList, finalizadoList]"
-          cdkDropListSortingDisabled
-          class="kanban-list"
-          (cdkDropListDropped)="onDrop($event, 'en-progreso')"
-        >
+        <div cdkDropList #enProgresoList="cdkDropList" [cdkDropListData]="getTicketsPorEstado('en-progreso')" [cdkDropListConnectedTo]="[pendienteList, revisionList, finalizadoList]" cdkDropListSortingDisabled class="kanban-list" (cdkDropListDropped)="onDrop($event, 'en-progreso')">
           @for (ticket of getTicketsPorEstado('en-progreso'); track ticket.id) {
-            <div
-              cdkDrag
-              [cdkDragData]="ticket"
-              class="kanban-card"
-              [class]="'severity-' + severidadPrioridad(ticket.prioridad)"
-            >
+            <div cdkDrag [cdkDragData]="ticket" class="kanban-card" [class]="'severity-' + severidadPrioridad(ticket.prioridad)">
               <div cdkDragHandle class="kanban-card-header">
                 <p-tag [value]="ticket.prioridad" [severity]="severidadPrioridad(ticket.prioridad)" />
               </div>
@@ -187,15 +108,10 @@
               <p>{{ ticket.descripcion | slice: 0 : 60 }}...</p>
               <div class="kanban-card-footer">
                 <div style="display: flex; align-items: center; gap: 0.3rem">
-                  <p-avatar
-                    [label]="ticket.asignadoA ? ticket.asignadoA[0].toUpperCase() : '?'"
-                    shape="circle"
-                  />
-                  <span style="font-size: 0.8rem">{{ ticket.asignadoA || 'Sin asignar' }}</span>
+                  <p-avatar [label]="ticket.asignado_nombre ? ticket.asignado_nombre[0].toUpperCase() : '?'" shape="circle" />
+                  <span style="font-size: 0.8rem">{{ ticket.asignado_nombre || 'Sin asignar' }}</span>
                 </div>
-                <span style="font-size: 0.75rem; color: rgba(229, 231, 235, 0.6)"
-                  >{{ ticket.fechaLimite }}</span
-                >
+                <span style="font-size: 0.75rem; color: rgba(229, 231, 235, 0.6)">{{ ticket.fecha_limite }}</span>
               </div>
             </div>
           }
@@ -207,22 +123,9 @@
           <h3>Revisión</h3>
           <span class="kanban-count">{{ getTicketsPorEstado('revision').length }}</span>
         </div>
-        <div
-          cdkDropList
-          #revisionList="cdkDropList"
-          [cdkDropListData]="getTicketsPorEstado('revision')"
-          [cdkDropListConnectedTo]="[pendienteList, enProgresoList, finalizadoList]"
-          cdkDropListSortingDisabled
-          class="kanban-list"
-          (cdkDropListDropped)="onDrop($event, 'revision')"
-        >
+        <div cdkDropList #revisionList="cdkDropList" [cdkDropListData]="getTicketsPorEstado('revision')" [cdkDropListConnectedTo]="[pendienteList, enProgresoList, finalizadoList]" cdkDropListSortingDisabled class="kanban-list" (cdkDropListDropped)="onDrop($event, 'revision')">
           @for (ticket of getTicketsPorEstado('revision'); track ticket.id) {
-            <div
-              cdkDrag
-              [cdkDragData]="ticket"
-              class="kanban-card"
-              [class]="'severity-' + severidadPrioridad(ticket.prioridad)"
-            >
+            <div cdkDrag [cdkDragData]="ticket" class="kanban-card" [class]="'severity-' + severidadPrioridad(ticket.prioridad)">
               <div cdkDragHandle class="kanban-card-header">
                 <p-tag [value]="ticket.prioridad" [severity]="severidadPrioridad(ticket.prioridad)" />
               </div>
@@ -230,15 +133,10 @@
               <p>{{ ticket.descripcion | slice: 0 : 60 }}...</p>
               <div class="kanban-card-footer">
                 <div style="display: flex; align-items: center; gap: 0.3rem">
-                  <p-avatar
-                    [label]="ticket.asignadoA ? ticket.asignadoA[0].toUpperCase() : '?'"
-                    shape="circle"
-                  />
-                  <span style="font-size: 0.8rem">{{ ticket.asignadoA || 'Sin asignar' }}</span>
+                  <p-avatar [label]="ticket.asignado_nombre ? ticket.asignado_nombre[0].toUpperCase() : '?'" shape="circle" />
+                  <span style="font-size: 0.8rem">{{ ticket.asignado_nombre || 'Sin asignar' }}</span>
                 </div>
-                <span style="font-size: 0.75rem; color: rgba(229, 231, 235, 0.6)"
-                  >{{ ticket.fechaLimite }}</span
-                >
+                <span style="font-size: 0.75rem; color: rgba(229, 231, 235, 0.6)">{{ ticket.fecha_limite }}</span>
               </div>
             </div>
           }
@@ -250,22 +148,9 @@
           <h3>Finalizado</h3>
           <span class="kanban-count">{{ getTicketsPorEstado('finalizado').length }}</span>
         </div>
-        <div
-          cdkDropList
-          #finalizadoList="cdkDropList"
-          [cdkDropListData]="getTicketsPorEstado('finalizado')"
-          [cdkDropListConnectedTo]="[pendienteList, enProgresoList, revisionList]"
-          cdkDropListSortingDisabled
-          class="kanban-list"
-          (cdkDropListDropped)="onDrop($event, 'finalizado')"
-        >
+        <div cdkDropList #finalizadoList="cdkDropList" [cdkDropListData]="getTicketsPorEstado('finalizado')" [cdkDropListConnectedTo]="[pendienteList, enProgresoList, revisionList]" cdkDropListSortingDisabled class="kanban-list" (cdkDropListDropped)="onDrop($event, 'finalizado')">
           @for (ticket of getTicketsPorEstado('finalizado'); track ticket.id) {
-            <div
-              cdkDrag
-              [cdkDragData]="ticket"
-              class="kanban-card"
-              [class]="'severity-' + severidadPrioridad(ticket.prioridad)"
-            >
+            <div cdkDrag [cdkDragData]="ticket" class="kanban-card" [class]="'severity-' + severidadPrioridad(ticket.prioridad)">
               <div cdkDragHandle class="kanban-card-header">
                 <p-tag [value]="ticket.prioridad" [severity]="severidadPrioridad(ticket.prioridad)" />
               </div>
@@ -273,15 +158,10 @@
               <p>{{ ticket.descripcion | slice: 0 : 60 }}...</p>
               <div class="kanban-card-footer">
                 <div style="display: flex; align-items: center; gap: 0.3rem">
-                  <p-avatar
-                    [label]="ticket.asignadoA ? ticket.asignadoA[0].toUpperCase() : '?'"
-                    shape="circle"
-                  />
-                  <span style="font-size: 0.8rem">{{ ticket.asignadoA || 'Sin asignar' }}</span>
+                  <p-avatar [label]="ticket.asignado_nombre ? ticket.asignado_nombre[0].toUpperCase() : '?'" shape="circle" />
+                  <span style="font-size: 0.8rem">{{ ticket.asignado_nombre || 'Sin asignar' }}</span>
                 </div>
-                <span style="font-size: 0.75rem; color: rgba(229, 231, 235, 0.6)"
-                  >{{ ticket.fechaLimite }}</span
-                >
+                <span style="font-size: 0.75rem; color: rgba(229, 231, 235, 0.6)">{{ ticket.fecha_limite }}</span>
               </div>
             </div>
           }
@@ -291,47 +171,15 @@
   }
 </div>
 
-<p-dialog
-  [(visible)]="dialogCrear"
-  header="Nuevo Ticket"
-  [modal]="true"
-  [style]="{ width: '480px' }"
->
+<p-dialog [(visible)]="dialogCrear" header="Nuevo Ticket" [modal]="true" [style]="{ width: '480px' }">
   <div style="display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem 0">
     <input pInputText [(ngModel)]="nuevoTicket.titulo" placeholder="Título" style="width: 100%" />
-    <textarea
-      pTextarea
-      [(ngModel)]="nuevoTicket.descripcion"
-      placeholder="Descripción"
-      rows="3"
-      style="width: 100%"
-    ></textarea>
-    <p-select
-      [(ngModel)]="nuevoTicket.estado"
-      [options]="estadoOpciones"
-      placeholder="Estado"
-      style="width: 100%"
-    />
-    <p-select
-      [(ngModel)]="nuevoTicket.prioridad"
-      [options]="prioridadOpciones"
-      placeholder="Prioridad"
-      style="width: 100%"
-    />
-    <p-select
-      [(ngModel)]="nuevoTicket.asignadoA"
-      [options]="usuarios"
-      placeholder="Asignar a..."
-      style="width: 100%"
-    />
+    <textarea pTextarea [(ngModel)]="nuevoTicket.descripcion" placeholder="Descripción" rows="3" style="width: 100%"></textarea>
+    <p-select [(ngModel)]="nuevoTicket.estado" [options]="estadoOpciones" optionLabel="label" optionValue="value" placeholder="Estado" style="width: 100%" />
+    <p-select [(ngModel)]="nuevoTicket.prioridad" [options]="prioridadOpciones" optionLabel="label" optionValue="value" placeholder="Prioridad" style="width: 100%" />
+    <p-select [(ngModel)]="nuevoTicket.asignado_a" [options]="usuarios" optionLabel="label" optionValue="value" placeholder="Asignar a..." style="width: 100%" />
     <label style="color: #64748b; font-size: 0.85rem">Fecha límite</label>
-    <input
-      pInputText
-      type="date"
-      [(ngModel)]="nuevoTicket.fechaLimite"
-      [min]="minFecha"
-      style="width: 100%"
-    />
+    <input pInputText type="date" [(ngModel)]="nuevoTicket.fecha_limite" [min]="minFecha" style="width: 100%" />
   </div>
   <ng-template pTemplate="footer">
     <p-button label="Cancelar" severity="secondary" (onClick)="dialogCrear = false" />
@@ -339,47 +187,22 @@
   </ng-template>
 </p-dialog>
 
-<p-dialog
-  [(visible)]="dialogDetalle"
-  header="Detalle del Ticket"
-  [modal]="true"
-  [style]="{ width: '560px' }"
->
+<p-dialog [(visible)]="dialogDetalle" header="Detalle del Ticket" [modal]="true" [style]="{ width: '560px' }">
   @if (ticketSeleccionado) {
     <div style="display: flex; flex-direction: column; gap: 1rem">
-      <div class="detalle-row">
-        <span class="detalle-label">Título</span>
-        <span>{{ ticketSeleccionado.titulo }}</span>
-      </div>
-      <div class="detalle-row">
-        <span class="detalle-label">Descripción</span>
-        <span>{{ ticketSeleccionado.descripcion }}</span>
-      </div>
+      <div class="detalle-row"><span class="detalle-label">Título</span><span>{{ ticketSeleccionado.titulo }}</span></div>
+      <div class="detalle-row"><span class="detalle-label">Descripción</span><span>{{ ticketSeleccionado.descripcion }}</span></div>
       <div style="display: flex; gap: 1rem; flex-wrap: wrap">
-        <p-tag
-          [value]="ticketSeleccionado.estado"
-          [severity]="severidadEstado(ticketSeleccionado.estado)"
-        />
-        <p-tag
-          [value]="ticketSeleccionado.prioridad"
-          [severity]="severidadPrioridad(ticketSeleccionado.prioridad)"
-        />
+        <p-tag [value]="ticketSeleccionado.estado" [severity]="severidadEstado(ticketSeleccionado.estado)" />
+        <p-tag [value]="ticketSeleccionado.prioridad" [severity]="severidadPrioridad(ticketSeleccionado.prioridad)" />
       </div>
       <div class="detalle-row">
         <span class="detalle-label">Asignado a</span>
-        <span>{{ ticketSeleccionado.asignadoA || '—' }}</span>
+        <span>{{ ticketSeleccionado.asignado_nombre || '—' }}</span>
       </div>
-      <div class="detalle-row">
-        <span class="detalle-label">Fecha creación</span>
-        <span>{{ ticketSeleccionado.fechaCreacion }}</span>
-      </div>
-      <div class="detalle-row">
-        <span class="detalle-label">Fecha límite</span>
-        <span>{{ ticketSeleccionado.fechaLimite }}</span>
-      </div>
-
+      <div class="detalle-row"><span class="detalle-label">Fecha creación</span><span>{{ ticketSeleccionado.fecha_creacion }}</span></div>
+      <div class="detalle-row"><span class="detalle-label">Fecha límite</span><span>{{ ticketSeleccionado.fecha_limite }}</span></div>
       <p-divider />
-
       <h4 style="margin: 0"><i class="pi pi-comments"></i> Comentarios</h4>
       @for (c of ticketSeleccionado.comentarios; track c.id) {
         <div class="comentario">
@@ -392,25 +215,15 @@
         <p style="color: #94a3b8">Sin comentarios aún</p>
       }
       <div style="display: flex; gap: 0.5rem">
-        <input
-          pInputText
-          [(ngModel)]="nuevoComentario"
-          placeholder="Agregar comentario..."
-          style="flex: 1"
-        />
+        <input pInputText [(ngModel)]="nuevoComentario" placeholder="Agregar comentario..." style="flex: 1" />
         <p-button icon="pi pi-send" (onClick)="agregarComentario()" />
       </div>
-
       <p-divider />
-
       <h4 style="margin: 0"><i class="pi pi-history"></i> Historial de cambios</h4>
       @for (h of ticketSeleccionado.historial; track h.id) {
         <div class="historial-item">
           <i class="pi pi-circle-fill" style="font-size: 0.5rem; color: #3b82f6"></i>
-          <span
-            ><strong>{{ h.campo }}</strong
-            >: {{ h.valorAnterior || 'vacío' }} → {{ h.valorNuevo }}</span
-          >
+          <span><strong>{{ h.campo }}</strong>: {{ h.valor_anterior || 'vacío' }} → {{ h.valor_nuevo }}</span>
           <span class="historial-fecha">{{ h.fecha }} — {{ h.usuario }}</span>
         </div>
       }

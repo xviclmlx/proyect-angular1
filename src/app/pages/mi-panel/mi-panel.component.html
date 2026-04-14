@@ -71,7 +71,7 @@
         <td>
           <p-tag [value]="ticket.prioridad" [severity]="severidadPrioridad(ticket.prioridad)" />
         </td>
-        <td style="white-space: nowrap">{{ ticket.fechaLimite }}</td>
+        <td style="white-space: nowrap">{{ ticket.fecha_limite }}</td>
         <td>
           <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
             <p-button
@@ -158,11 +158,11 @@
       </div>
       <div class="detalle-row">
         <span class="detalle-label">Fecha creación</span>
-        <span>{{ ticketSeleccionado.fechaCreacion }}</span>
+        <span>{{ ticketSeleccionado.fecha_creacion }}</span>
       </div>
       <div class="detalle-row">
         <span class="detalle-label">Fecha límite</span>
-        <span>{{ ticketSeleccionado.fechaLimite }}</span>
+        <span>{{ ticketSeleccionado.fecha_limite }}</span>
       </div>
 
       <p-divider />
@@ -173,7 +173,7 @@
           <i class="pi pi-circle-fill" style="font-size: 0.5rem; color: #3b82f6"></i>
           <span
             ><strong>{{ h.campo }}</strong
-            >: {{ h.valorAnterior || 'vacío' }} → {{ h.valorNuevo }}</span
+            >: {{ h.valor_anterior || 'vacío' }} → {{ h.valor_nuevo }}</span
           >
           <span class="historial-fecha">{{ h.fecha }}</span>
         </div>

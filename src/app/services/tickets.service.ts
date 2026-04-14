@@ -1,21 +1,24 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 export interface Ticket {
   id: number;
   titulo: string;
   descripcion: string;
   estado: 'pendiente' | 'en-progreso' | 'revision' | 'finalizado';
-  asignadoA: string;
+  asignado_a: number | null;
+  asignado_nombre: string | null;
   prioridad: 'baja' | 'media' | 'alta' | 'critica';
-  fechaCreacion: string;
-  fechaLimite: string;
+  fecha_creacion: string;
+  fecha_limite: string;
+  grupo_id: number;
   comentarios: Comentario[];
   historial: Historial[];
-  grupoId: number;
 }
 
 export interface Comentario {
   id: number;
+  ticket_id: number;
   autor: string;
   texto: string;
   fecha: string;
@@ -23,128 +26,51 @@ export interface Comentario {
 
 export interface Historial {
   id: number;
+  ticket_id: number;
   campo: string;
-  valorAnterior: string;
-  valorNuevo: string;
+  valor_anterior: string;
+  valor_nuevo: string;
   fecha: string;
   usuario: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class TicketsService {
-  private _tickets = signal<Ticket[]>([
-    {
-      id: 1,
-      titulo: 'Configurar nuevo equipo en Edificio I Division DTAI',
-      descripcion: 'Configurar laptop para el Mtro.Emmanual Garcia',
-      estado: 'en-progreso',
-      asignadoA: 'diegiñi',
-      prioridad: 'alta',
-      fechaCreacion: '2026-03-06',
-      fechaLimite: '2026-03-10',
-      comentarios: [
-        {
-          id: 1,
-          autor: 'diegiñi',
-          texto: 'enseguida queda listo',
-          fecha: '2026-03-07',
-        },
-      ],
-      historial: [
-        {
-          id: 1,
-          campo: 'estado',
-          valorAnterior: 'pendiente',
-          valorNuevo: 'en-progreso',
-          fecha: '2026-03-07',
-          usuario: 'diegiñi',
-        },
-      ],
-      grupoId: 1,
-    },
-    {
-      id: 2,
-      titulo: 'Configurar Cañon para proyectar en Edificio K Division DTAI',
-      descripcion: 'Favor de ayudarme a configurar el proyector, ya que el HDMI no esta agarrando',
-      estado: 'finalizado',
-      asignadoA: 'victor gudiño',
-      prioridad: 'media',
-      fechaCreacion: '2026-03-01',
-      fechaLimite: '2026-03-03',
-      comentarios: [],
-      historial: [],
-      grupoId: 1,
-    },
-    {
-      id: 3,
-      titulo: 'Pasar a recoger los Boletos para la rifa',
-      descripcion: 'Favor de pasar por su bonche de boletos para venderlos',
-      estado: 'pendiente',
-      asignadoA: 'Epson',
-      prioridad: 'baja',
-      fechaCreacion: '2026-03-01',
-      fechaLimite: '2026-03-10',
-      comentarios: [],
-      historial: [],
-      grupoId: 2,
-    },
-  ]);
+  private apiUrl = 'http://localhost:3000/api/tickets';
+  private _tickets = signal<Ticket[]>([]);
+
+  constructor(private http: HttpClient) {
+    this.cargar();
+  }
 
   get tickets() {
     return this._tickets;
   }
 
-  agregar(ticket: Omit<Ticket, 'id' | 'fechaCreacion' | 'comentarios' | 'historial'>) {
-    const nuevo: Ticket = {
-      ...ticket,
-      id: this._tickets().length + 1,
-      fechaCreacion: new Date().toISOString().split('T')[0],
-      comentarios: [],
-      historial: [
-        {
-          id: 1,
-          campo: 'estado',
-          valorAnterior: '',
-          valorNuevo: ticket.estado,
-          fecha: new Date().toISOString().split('T')[0],
-          usuario: 'diegiñi',
-        },
-      ],
-    };
-    this._tickets.update((t) => [...t, nuevo]);
+  cargar() {
+    this.http.get<Ticket[]>(this.apiUrl).subscribe({
+      next: (data) => this._tickets.set(data),
+      error: (err) => console.error('Error cargando tickets', err)
+    });
+  }
+
+  agregar(ticket: Omit<Ticket, 'id' | 'fecha_creacion' | 'comentarios' | 'historial' | 'asignado_nombre'>) {
+    return this.http.post<Ticket>(this.apiUrl, ticket);
   }
 
   actualizar(ticket: Ticket) {
-    this.tickets.update((lista) => lista.map((t) => (t.id === ticket.id ? { ...ticket } : t)));
+    return this.http.put<Ticket>(`${this.apiUrl}/${ticket.id}`, ticket);
   }
 
   eliminar(id: number) {
-    this._tickets.update((ts) => ts.filter((t) => t.id !== id));
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  agregarComentario(ticketId: number, texto: string) {
-    this._tickets.update((ts) =>
-      ts.map((t) => {
-        if (t.id === ticketId) {
-          return {
-            ...t,
-            comentarios: [
-              ...t.comentarios,
-              {
-                id: t.comentarios.length + 1,
-                autor: 'diegiñi',
-                texto,
-                fecha: new Date().toISOString().split('T')[0],
-              },
-            ],
-          };
-        }
-        return t;
-      }),
-    );
+  agregarComentario(ticketId: number, autor: string, texto: string) {
+    return this.http.post(`${this.apiUrl}/${ticketId}/comentarios`, { autor, texto });
   }
 
   porGrupo(grupoId: number) {
-    return this._tickets().filter((t) => t.grupoId === grupoId);
+    return this._tickets().filter((t) => t.grupo_id === grupoId);
   }
 }
